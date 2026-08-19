@@ -108,8 +108,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col items-center justify-between gap-4 pt-6 sm:flex-row">
           <p className="font-sans text-xs text-mist">
-            © 2026 DAILY NEWS360. All rights reserved. News content remains the
-            property of its original publishers.
+            © 2025 Daily News360 All Rights Reserved By Duggar Pvt Ltd.
           </p>
           <div className="flex items-center gap-4 font-sans text-xs text-mist">
             <span className="flex items-center gap-1">

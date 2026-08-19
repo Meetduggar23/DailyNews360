@@ -209,7 +209,7 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
                 ))}
               </ul>
               <p className="mt-3 font-sans text-[11px] text-mist">
-                © 2026 DAILY NEWS360. {BRAND.tagline}
+                © 2025 Daily News360 All Rights Reserved By Duggar Pvt Ltd.
               </p>
             </div>
           </motion.div>
