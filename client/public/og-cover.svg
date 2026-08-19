@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0B0D10"/>
+  <circle cx="990" cy="150" r="220" fill="#C62828" opacity="0.18"/>
+  <circle cx="160" cy="520" r="260" fill="#E05252" opacity="0.12"/>
+  <text x="100" y="300" font-family="Georgia, serif" font-size="88" fill="#F5F5F5">DailyNews<span fill="#E05252">360</span></text>
+  <text x="100" y="370" font-family="Inter, Arial, sans-serif" font-size="34" fill="#9CA3AF">Every Story. Every Angle.</text>
+  <text x="100" y="470" font-family="Inter, Arial, sans-serif" font-size="24" fill="#6B7280">Your world, one feed.</text>
+</svg>

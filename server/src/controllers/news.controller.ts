@@ -1,0 +1,156 @@
+import type { Request, Response } from "express";
+import { z } from "zod";
+import { newsService } from "../services/news/newsService.js";
+import { preferenceService } from "../services/preference.service.js";
+import { bookmarkService } from "../services/bookmark.service.js";
+import { historyService } from "../services/history.service.js";
+import { CATEGORIES } from "../services/news/types.js";
+import { fail, ok } from "../utils/response.js";
+
+const pageSizeSchema = z.coerce.number().int().min(1).max(50).default(15);
+const pageSchema = z.coerce.number().int().min(1).max(200).default(1);
+
+async function userSignals(req: Request) {
+  if (!req.user) return undefined;
+  try {
+    const [categories] = await Promise.all([
+      preferenceService.list(req.user.id),
+    ]);
+    return {
+      categories,
+      bookmarkedCategories: [],
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+export async function topNewsController(req: Request, res: Response): Promise<void> {
+  const pageSize = pageSizeSchema.parse(req.query["pageSize"] ?? 15);
+  const q = req.query["q"] ? String(req.query["q"]) : undefined;
+  const query = {
+    pageSize,
+    country: req.query["country"] ? String(req.query["country"]) : undefined,
+    language: req.query["language"] ? String(req.query["language"]) : undefined,
+    q,
+  };
+  try {
+    const articles = await newsService.getTopNews(query, await userSignals(req));
+    ok(res, { articles });
+  } catch {
+    fail(res, 502, "NEWS_PROVIDER_ERROR", "Unable to fetch news right now.");
+  }
+}
+
+export async function categoryNewsController(req: Request, res: Response): Promise<void> {
+  const category = String(req.params["category"] ?? "").toLowerCase();
+  if (!CATEGORIES.includes(category as (typeof CATEGORIES)[number])) {
+    fail(res, 400, "VALIDATION_ERROR", `Unknown category: ${category}`);
+    return;
+  }
+  const pageSize = pageSizeSchema.parse(req.query["pageSize"] ?? 15);
+  const page = pageSchema.parse(req.query["page"] ?? 1);
+  const query = {
+    pageSize,
+    page,
+    country: req.query["country"] ? String(req.query["country"]) : undefined,
+    language: req.query["language"] ? String(req.query["language"]) : undefined,
+    sort: req.query["sort"] ? String(req.query["sort"]) : "latest",
+  };
+  try {
+    const result = await newsService.getCategoryNews(category, query, await userSignals(req));
+    ok(res, {
+      articles: result.articles,
+      total: result.total,
+      hasMore: result.hasMore,
+      category,
+      label: newsService.getCategoryLabel(category),
+    });
+  } catch {
+    fail(res, 502, "NEWS_PROVIDER_ERROR", "Unable to fetch news right now.");
+  }
+}
+
+const searchQuerySchema = z.object({
+  q: z.string().trim().min(1).max(200),
+  pageSize: pageSizeSchema,
+  category: z.string().optional(),
+  sources: z.string().optional(),
+  from: z.string().optional(),
+  to: z.string().optional(),
+  sort: z.enum(["latest", "relevance", "popular"]).default("relevance"),
+});
+
+export async function searchNewsController(req: Request, res: Response): Promise<void> {
+  const parsed = searchQuerySchema.parse(req.query);
+  try {
+    const result = await newsService.searchNews(
+      {
+        q: parsed.q,
+        pageSize: parsed.pageSize,
+        category: parsed.category,
+        sources: parsed.sources,
+        from: parsed.from,
+        to: parsed.to,
+        sort: parsed.sort,
+      },
+      await userSignals(req),
+    );
+    ok(res, {
+      articles: result.articles,
+      total: result.total,
+      hasMore: result.hasMore,
+      query: parsed.q,
+    });
+  } catch {
+    fail(res, 502, "NEWS_PROVIDER_ERROR", "Unable to search news right now.");
+  }
+}
+
+export async function trendingController(req: Request, res: Response): Promise<void> {
+  const pageSize = pageSizeSchema.parse(req.query["pageSize"] ?? 10);
+  try {
+    const articles = await newsService.getTrending({ pageSize }, await userSignals(req));
+    ok(res, { articles });
+  } catch {
+    fail(res, 502, "NEWS_PROVIDER_ERROR", "Unable to fetch trending stories right now.");
+  }
+}
+
+export async function articleController(req: Request, res: Response): Promise<void> {
+  const id = String(req.params["id"] ?? "");
+  try {
+    const article = await newsService.getArticleById(id);
+    if (!article) {
+      fail(res, 404, "NOT_FOUND", "This story could not be found.");
+      return;
+    }
+
+    // Record reading history for authenticated users (non-critical).
+    if (req.user) {
+      void historyService.record(req.user.id, {
+        articleId: article.id,
+        category: article.category,
+        source: article.sourceName,
+      });
+    }
+
+    const related = await newsService.getCategoryNews(article.category, { pageSize: 6 });
+    ok(res, {
+      article,
+      related: related.articles.filter((a) => a.id !== article.id).slice(0, 4),
+    });
+  } catch {
+    fail(res, 502, "NEWS_PROVIDER_ERROR", "Unable to fetch this story right now.");
+  }
+}
+
+export async function sourcesController(_req: Request, res: Response): Promise<void> {
+  try {
+    const sources = await newsService.getSources();
+    const providers = newsService.getConfiguredProviders();
+    ok(res, { sources, providers });
+  } catch {
+    fail(res, 502, "NEWS_PROVIDER_ERROR", "Unable to fetch sources right now.");
+  }
+}
