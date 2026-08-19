@@ -188,3 +188,70 @@ body::-webkit-scrollbar,
 .category-navbar::-webkit-scrollbar {
   display: none;
 }
+/* ------------------------------------------------------------------ */
+/* Reading Lens — accessibility & reading features                     */
+/* ------------------------------------------------------------------ */
+
+/* Text size override */
+.reading-lens-text-active article,
+.reading-lens-text-active .article-content {
+  font-size: var(--reading-text-size, 1rem) !important;
+  line-height: var(--reading-line-height, 1.75) !important;
+}
+
+/* Reading Mode — focus on article content */
+.reading-mode-active .container-news {
+  max-width: 720px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.reading-mode-active nav,
+.reading-mode-active footer,
+.reading-mode-active .category-navbar,
+.reading-mode-active aside:not(.article-sidebar) {
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+/* High Contrast */
+.high-contrast-active {
+  --ink: 0 0 0 !important;
+  --secondary: 30 30 30 !important;
+  --paper: 255 255 255 !important;
+}
+
+.high-contrast-active .article-content,
+.high-contrast-active article {
+  font-weight: 500 !important;
+}
+
+/* Sepia reading theme */
+.reading-theme-sepia article,
+.reading-theme-sepia .article-content {
+  background-color: #f4ecd8 !important;
+  color: #5b4636 !important;
+}
+
+/* Dark reading theme */
+.reading-theme-dark article,
+.reading-theme-dark .article-content {
+  background-color: #1a1a1a !important;
+  color: #e0e0e0 !important;
+}
+
+/* High contrast reading theme */
+.reading-theme-high-contrast article,
+.reading-theme-high-contrast .article-content {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .reading-lens-text-active *,
+  .reading-mode-active * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
