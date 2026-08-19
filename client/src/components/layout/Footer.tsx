@@ -1,36 +1,11 @@
 import { Link } from "react-router-dom";
-import { Heart } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { Logo } from "@/components/common/Logo";
-
-const NEWS_LINKS = [
-  { to: "/", label: "Home" },
-  { to: "/category/india", label: "India" },
-  { to: "/category/world", label: "World" },
-  { to: "/category/politics", label: "Politics" },
-  { to: "/category/business", label: "Business" },
-  { to: "/category/technology", label: "Technology" },
-  { to: "/category/sports", label: "Sports" },
-  { to: "/category/entertainment", label: "Entertainment" },
-  { to: "/category/science", label: "Science" },
-  { to: "/category/health", label: "Health" },
-] as const;
-
-const EXPLORE_LINKS = [
-  { to: "/category/top", label: "Top Stories" },
-  { to: "/trending", label: "Trending" },
-  { to: "/for-you", label: "For You" },
-  { to: "/saved", label: "Saved" },
-  { to: "/history", label: "Reading History" },
-  { to: "/sources", label: "Sources" },
-  { to: "/search", label: "Search" },
-] as const;
-
-const COMPANY_LINKS = [
-  { to: "/about", label: "About" },
-  { to: "/privacy", label: "Privacy" },
-  { to: "/terms", label: "Terms" },
-  { to: "/settings", label: "Settings" },
-] as const;
+import {
+  FOOTER_NEWS,
+  FOOTER_EXPLORE,
+  FOOTER_COMPANY,
+} from "@/components/navigation/navigationData";
 
 export function Footer() {
   return (
@@ -46,54 +21,62 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Sections */}
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
-            <nav aria-label="News sections">
+          {/* Navigation columns */}
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4">
+            {/* News */}
+            <nav aria-label="News">
               <h3 className="mb-3 font-sans text-xs font-bold uppercase tracking-widest text-mist">
                 News
               </h3>
               <ul className="space-y-2">
-                {NEWS_LINKS.map((link) => (
-                  <li key={link.to}>
+                {FOOTER_NEWS.map((item) => (
+                  <li key={item.to}>
                     <Link
-                      to={link.to}
+                      to={item.to}
                       className="font-sans text-sm text-secondary transition-colors hover:text-accent"
                     >
-                      {link.label}
+                      {item.label}
                     </Link>
                   </li>
                 ))}
               </ul>
             </nav>
+
+            {/* Explore */}
             <nav aria-label="Explore">
               <h3 className="mb-3 font-sans text-xs font-bold uppercase tracking-widest text-mist">
                 Explore
               </h3>
               <ul className="space-y-2">
-                {EXPLORE_LINKS.map((link) => (
-                  <li key={link.to}>
+                {FOOTER_EXPLORE.map((item) => (
+                  <li key={item.to}>
                     <Link
-                      to={link.to}
-                      className="font-sans text-sm text-secondary transition-colors hover:text-accent"
+                      to={item.to}
+                      className="inline-flex items-center gap-1.5 font-sans text-sm text-secondary transition-colors hover:text-accent"
                     >
-                      {link.label}
+                      {item.label === "For You" && (
+                        <Sparkles className="h-3 w-3" aria-hidden="true" />
+                      )}
+                      {item.label}
                     </Link>
                   </li>
                 ))}
               </ul>
             </nav>
+
+            {/* Company */}
             <nav aria-label="Company">
               <h3 className="mb-3 font-sans text-xs font-bold uppercase tracking-widest text-mist">
                 Company
               </h3>
               <ul className="space-y-2">
-                {COMPANY_LINKS.map((link) => (
-                  <li key={link.to}>
+                {FOOTER_COMPANY.map((item) => (
+                  <li key={item.to}>
                     <Link
-                      to={link.to}
+                      to={item.to}
                       className="font-sans text-sm text-secondary transition-colors hover:text-accent"
                     >
-                      {link.label}
+                      {item.label}
                     </Link>
                   </li>
                 ))}

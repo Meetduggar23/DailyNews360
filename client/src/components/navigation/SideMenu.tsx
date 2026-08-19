@@ -9,12 +9,12 @@ import {
   ACCOUNT_ITEMS_LOGGED_IN,
   ACCOUNT_ITEMS_LOGGED_OUT,
   EXPLORE_ITEMS,
-  FOOTER_ITEMS,
+  COMPANY_ITEMS,
   MORE_CATEGORIES,
-  PRIMARY_CATEGORIES,
+  NEWS_CATEGORIES,
   SOCIAL_LINKS,
   type AccountItem,
-} from "./navigationConfig";
+} from "./navigationData";
 import { useAuthStore } from "@/stores/auth.store";
 import { useToast } from "@/components/ui/toaster";
 import { BRAND } from "@/constants";
@@ -152,7 +152,7 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
             {/* Scrollable body */}
             <div className="side-menu-scroll flex-1 overflow-y-auto py-2">
               <SideMenuSection>
-                <CategoryNavigation items={PRIMARY_CATEGORIES} onNavigate={onClose} />
+                <CategoryNavigation items={NEWS_CATEGORIES} onNavigate={onClose} />
               </SideMenuSection>
 
               <SideMenuSection title="More" className="border-t border-line">
@@ -196,7 +196,7 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
             {/* Footer */}
             <div className="border-t border-line px-6 py-4">
               <ul className="flex flex-wrap gap-x-4 gap-y-1">
-                {FOOTER_ITEMS.map((item) => (
+                {COMPANY_ITEMS.map((item) => (
                   <li key={item.to}>
                     <Link
                       to={item.to}
