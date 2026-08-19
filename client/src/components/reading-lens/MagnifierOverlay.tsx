@@ -19,11 +19,8 @@ const LENS_SIZE = { sm: 280, md: 400, lg: 520 };
  */
 export function MagnifierOverlay({ active, onClose }: MagnifierOverlayProps) {
   const rafRef = useRef(0);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const handleRef = useRef<HTMLDivElement | null>(null);
   const cloneRef = useRef<HTMLElement | null>(null);
   const reflectionRef = useRef<HTMLDivElement | null>(null);
-  const rimRef = useRef<HTMLDivElement | null>(null);
   const isDarkRef = useRef(false);
 
   const lensSize =
@@ -61,7 +58,7 @@ export function MagnifierOverlay({ active, onClose }: MagnifierOverlayProps) {
         : "box-shadow:0 1px 2px rgba(0,0,0,0.2),0 4px 12px rgba(0,0,0,0.15),0 12px 32px rgba(0,0,0,0.1),0 24px 56px rgba(0,0,0,0.06)",
     ].join(";");
     document.body.appendChild(container);
-    containerRef.current = container;
+
 
     // ── Metal rim (outer ring) — premium brushed metal ───────────────
     const rimEl = document.createElement("div");
@@ -81,7 +78,6 @@ export function MagnifierOverlay({ active, onClose }: MagnifierOverlayProps) {
         : "border:1px solid rgba(200,200,200,0.6)",
     ].join(";");
     container.appendChild(rimEl);
-    rimRef.current = rimEl;
 
     // ── Inner bevel ring — metal→glass transition ────────────────────
     const innerBevel = document.createElement("div");
@@ -230,7 +226,6 @@ export function MagnifierOverlay({ active, onClose }: MagnifierOverlayProps) {
       "top:-9999px",
     ].join(";");
     document.body.appendChild(handle);
-    handleRef.current = handle;
 
     // ── Handle end cap (butt end) — turned wood ──────────────────────
     const handleCap = document.createElement("div");
@@ -345,11 +340,8 @@ export function MagnifierOverlay({ active, onClose }: MagnifierOverlayProps) {
       handle.remove();
       handleCap.remove();
       ferrule.remove();
-      containerRef.current = null;
-      handleRef.current = null;
       cloneRef.current = null;
       reflectionRef.current = null;
-      rimRef.current = null;
     };
   }, [active, onClose, lensSize]);
 

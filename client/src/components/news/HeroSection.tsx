@@ -1,23 +1,8 @@
 import { Link } from "react-router-dom";
 import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { relativeTime } from "@/lib/date";
+import { categoryLabel } from "@/lib/categories";
 import type { NewsArticle } from "@/types";
-
-function categoryLabel(category: string): string {
-  const labels: Record<string, string> = {
-    top: "Top Stories",
-    technology: "Technology",
-    business: "Business",
-    sports: "Sports",
-    entertainment: "Entertainment",
-    health: "Health",
-    science: "Science",
-    world: "World",
-    india: "India",
-    politics: "Politics",
-  };
-  return labels[category] ?? category;
-}
 
 interface HeroSectionProps {
   main: NewsArticle;

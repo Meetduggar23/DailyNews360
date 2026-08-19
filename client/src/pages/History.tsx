@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/button";
 import { formatDateTime } from "@/lib/date";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { categoryLabel } from "@/lib/categories";
 import type { NewsArticle } from "@/types";
 
 export function HistoryPage() {
@@ -96,22 +97,6 @@ export function HistoryPage() {
       )}
     </div>
   );
-}
-
-function categoryLabel(category: string): string {
-  const labels: Record<string, string> = {
-    top: "Top Stories",
-    technology: "Technology",
-    business: "Business",
-    sports: "Sports",
-    entertainment: "Entertainment",
-    health: "Health",
-    science: "Science",
-    world: "World",
-    india: "India",
-    politics: "Politics",
-  };
-  return labels[category] ?? category;
 }
 
 /** Local fallback title when history has no stored title (server stores ids only). */

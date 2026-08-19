@@ -2,24 +2,10 @@ import { Link } from "react-router-dom";
 import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { relativeTime } from "@/lib/date";
 import { cn } from "@/lib/utils";
+import { categoryLabel } from "@/lib/categories";
 import type { NewsArticle } from "@/types";
 
-const CATEGORY_LABELS: Record<string, string> = {
-  top: "Top Stories",
-  technology: "Technology",
-  business: "Business",
-  sports: "Sports",
-  entertainment: "Entertainment",
-  health: "Health",
-  science: "Science",
-  world: "World",
-  india: "India",
-  politics: "Politics",
-};
-
-export function categoryLabel(category: string): string {
-  return CATEGORY_LABELS[category] ?? category;
-}
+export { categoryLabel };
 
 interface EditorialRowProps {
   article: NewsArticle;
