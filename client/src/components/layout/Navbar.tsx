@@ -136,7 +136,7 @@ export function Navbar() {
       <header className="border-b border-line bg-paper">
         <div className="container-news">
           {/* Top utility row */}
-          <div className="flex items-center justify-between gap-4 py-2 text-[11px] uppercase tracking-wider text-mist">
+          <div className="relative flex items-center justify-between gap-4 py-2 text-[11px] uppercase tracking-wider text-mist">
             {/* Mobile: brand left, actions right */}
             <div className="flex w-full items-center justify-between md:hidden">
               <Link
@@ -160,8 +160,11 @@ export function Navbar() {
               </div>
             </div>
 
-            {/* Desktop: date left, actions right */}
+            {/* Desktop: date left, tagline center, actions right */}
             <p className="hidden md:block">{todayLine()}</p>
+            <p className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 whitespace-nowrap text-center text-[11px] uppercase tracking-wider text-mist md:block">
+              Every Story. Every Angle.
+            </p>
             <div className="hidden items-center gap-4 md:flex">
               <span aria-hidden="true" className="hidden h-4 w-px bg-line lg:block" />
               <button
@@ -188,7 +191,7 @@ export function Navbar() {
 
           {/* Masthead brand */}
           <div className="border-y border-line py-5 md:py-6">
-            <Logo showTagline wide />
+            <Logo wide />
           </div>
         </div>
       </header>
