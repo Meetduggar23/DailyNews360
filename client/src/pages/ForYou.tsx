@@ -84,42 +84,54 @@ export function ForYouPage() {
 
   return (
     <div className="container-news py-8">
-      <header className="mb-8 border-b border-line pb-6">
+      <header className="mb-8 border-b-2 border-ink pb-4 dark:border-ink/80">
         <div className="flex items-center gap-3">
           <Sparkles className="h-6 w-6 text-accent" aria-hidden="true" />
           <div>
-            <h1 className="font-serif text-3xl font-bold text-ink">For You</h1>
-            <p className="mt-1 text-sm text-mist">{BRAND.taglineAlternative}</p>
+            <h1 className="font-serif text-4xl font-bold uppercase tracking-wide text-ink">
+              For You
+            </h1>
+            <p className="mt-1 font-serif text-base italic text-secondary">{BRAND.taglineAlternative}</p>
           </div>
         </div>
       </header>
 
       {/* Interest selector */}
-      <section className="mb-10 rounded-xl bg-surface p-6 shadow-card" aria-label="Your interests">
-        <h2 className="text-sm font-semibold text-ink">What are you interested in?</h2>
-        <p className="mb-4 mt-1 text-xs text-mist">
+      <section className="mb-10 border border-line bg-surface p-6" aria-label="Your interests">
+        <h2 className="border-b border-line pb-3 font-serif text-xl font-bold uppercase tracking-wide text-ink">
+          Choose Your Interests
+        </h2>
+        <p className="mb-4 mt-3 text-sm text-secondary">
           Pick topics and we'll surface the stories that matter most to you.
         </p>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {INTEREST_CATEGORIES.map((category) => (
-            <button
-              key={category}
-              onClick={() => toggleInterest(category)}
-              aria-pressed={selected.includes(category)}
-              className={cn(
-                "flex items-center justify-between gap-2 rounded-lg border border-line px-3 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-line/40",
-                selected.includes(category) &&
-                  "border-accent/40 bg-accent/10 text-accent",
-              )}
-            >
-              {INTEREST_LABELS[category]}
-              {selected.includes(category) && (
-                <Check className="h-4 w-4 shrink-0" aria-hidden="true" />
-              )}
-            </button>
-          ))}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3">
+          {INTEREST_CATEGORIES.map((category) => {
+            const active = selected.includes(category);
+            return (
+              <button
+                key={category}
+                onClick={() => toggleInterest(category)}
+                aria-pressed={active}
+                className={cn(
+                  "flex items-center justify-between gap-2 border-b border-line/60 py-2.5 text-left font-sans text-sm font-medium transition-colors",
+                  active ? "text-accent" : "text-ink hover:text-accent",
+                )}
+              >
+                {INTEREST_LABELS[category]}
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "flex h-4 w-4 shrink-0 items-center justify-center border",
+                    active ? "border-accent bg-accent" : "border-line",
+                  )}
+                >
+                  {active && <Check className="h-3 w-3 text-white" aria-hidden="true" />}
+                </span>
+              </button>
+            );
+          })}
         </div>
-        <div className="mt-4 flex items-center gap-3">
+        <div className="mt-5 flex items-center gap-3">
           <Button
             onClick={() => saveMutation.mutate(selected)}
             disabled={saveMutation.isPending}
@@ -135,9 +147,8 @@ export function ForYouPage() {
       {/* Feed */}
       {hasPreferences ? (
         <>
-          <h2 className="mb-5 flex items-center gap-3 font-serif text-2xl font-bold text-ink">
-            <span className="h-6 w-1 rounded-full bg-accent" aria-hidden="true" />
-            Your daily feed
+          <h2 className="mb-5 border-b-2 border-ink pb-2 font-serif text-2xl font-bold uppercase tracking-wide text-ink dark:border-ink/80">
+            Your Daily Feed
           </h2>
 
           {feedQuery.isLoading && <SkeletonGrid count={6} />}
@@ -159,7 +170,7 @@ export function ForYouPage() {
             !feedQuery.isError &&
             feedQuery.data &&
             feedQuery.data.articles.length > 0 && (
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
                 {feedQuery.data.articles.map((article) => (
                   <ArticleCard key={article.id} article={article} />
                 ))}

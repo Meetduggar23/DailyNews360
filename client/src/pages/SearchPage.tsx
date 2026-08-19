@@ -7,10 +7,9 @@ import { SkeletonGrid } from "@/components/common/SkeletonStates";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { CATEGORIES, SORT_OPTIONS } from "@/constants";
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { debounce, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 export function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -82,7 +81,14 @@ export function SearchPage() {
 
   return (
     <div className="container-news py-8">
-      <h1 className="font-serif text-3xl font-bold text-ink">Search news</h1>
+      <header className="mb-8 border-b-2 border-ink pb-4 dark:border-ink/80">
+        <p className="font-sans text-xs font-bold uppercase tracking-widest text-accent">
+          DailyNews360 — Search
+        </p>
+        <h1 className="mt-2 font-serif text-4xl font-bold uppercase tracking-wide text-ink md:text-5xl">
+          Search News
+        </h1>
+      </header>
 
       {/* Search field */}
       <form
@@ -121,33 +127,36 @@ export function SearchPage() {
       </form>
 
       {/* Suggestions */}
-      <div className="mt-4 flex flex-wrap items-center gap-2" aria-label="Suggested searches">
-        <span className="text-xs font-medium text-mist">Suggestions:</span>
-        {["AI", "markets", "climate", "space", "cricket", "elections"].map((suggestion) => (
-          <button
-            key={suggestion}
-            onClick={() => {
-              setInput(suggestion);
-              setDebounced(suggestion);
-              setParam("q", suggestion);
-            }}
-            className="rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-mist transition-colors hover:border-accent hover:text-accent"
-          >
-            {suggestion}
-          </button>
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2" aria-label="Suggested searches">
+        <span className="text-xs font-semibold uppercase tracking-widest text-mist">
+          Suggestions:
+        </span>
+        {["AI", "markets", "climate", "space", "cricket", "elections"].map((suggestion, index) => (
+          <React.Fragment key={suggestion}>
+            {index > 0 && <span className="text-line" aria-hidden="true">|</span>}
+            <button
+              onClick={() => {
+                setInput(suggestion);
+                setDebounced(suggestion);
+                setParam("q", suggestion);
+              }}
+              className="font-sans text-sm font-medium text-secondary transition-colors hover:text-accent"
+            >
+              {suggestion}
+            </button>
+          </React.Fragment>
         ))}
       </div>
 
       {/* Category / source / date filters */}
-      <div className="mt-6 flex flex-wrap items-center gap-2">
-        <Badge variant="neutral">Category</Badge>
+      <div className="mt-6 flex flex-wrap items-center gap-3">
         <select
           value={category}
           onChange={(e) => setParam("category", e.target.value)}
           aria-label="Filter by category"
-          className="h-9 rounded-lg border border-line bg-surface px-3 text-sm text-ink"
+          className="h-9 border border-line bg-surface px-3 text-sm text-ink"
         >
-          <option value="">All</option>
+          <option value="">All categories</option>
           {CATEGORIES.map((c) => (
             <option key={c.slug} value={c.slug}>
               {c.label}
@@ -178,15 +187,17 @@ export function SearchPage() {
           className="h-9 w-40"
         />
 
-        <div className="flex items-center gap-1 rounded-lg bg-line/50 p-1" role="group" aria-label="Sort">
+        <div className="flex items-center gap-4 border-b border-line" role="group" aria-label="Sort">
           {SORT_OPTIONS.filter((s) => s.value !== "latest").map((option) => (
             <button
               key={option.value}
               onClick={() => setParam("sort", option.value)}
               aria-pressed={sort === option.value}
               className={cn(
-                "rounded-md px-3 py-1 text-xs font-medium text-mist transition-colors",
-                sort === option.value && "bg-surface text-ink shadow-sm",
+                "-mb-px border-b-2 py-2 text-xs font-semibold uppercase tracking-wide transition-colors",
+                sort === option.value
+                  ? "border-accent text-ink"
+                  : "border-transparent text-mist hover:text-ink",
               )}
             >
               {option.label}
@@ -224,7 +235,7 @@ export function SearchPage() {
             )}
 
             {!query.isLoading && !query.isError && articles.length > 0 && (
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
                 {articles.map((article) => (
                   <ArticleCard key={article.id} article={article} />
                 ))}

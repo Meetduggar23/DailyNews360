@@ -7,12 +7,17 @@ export function PrivacyPage() {
   });
   return (
     <div className="container-news max-w-3xl py-12">
-      <header className="mb-10 border-b border-line pb-8">
-        <h1 className="font-serif text-4xl font-bold text-ink">Privacy Policy</h1>
-        <p className="mt-3 text-sm text-mist">Last updated: August 2026</p>
+      <header className="mb-10 border-b-2 border-ink pb-6 dark:border-ink/80">
+        <p className="font-sans text-xs font-bold uppercase tracking-widest text-accent">
+          DailyNews360 — Policy
+        </p>
+        <h1 className="mt-2 font-serif text-4xl font-bold uppercase tracking-wide text-ink">
+          Privacy Policy
+        </h1>
+        <p className="mt-3 font-sans text-sm text-mist">Last updated: August 2026</p>
       </header>
 
-      <div className="flex flex-col gap-8 text-sm leading-relaxed text-mist">
+      <div className="flex flex-col gap-8 font-serif text-[17px] leading-relaxed text-secondary">
         <section>
           <h2 className="mb-2 font-serif text-xl font-bold text-ink">What data we store</h2>
           <p>

@@ -1,5 +1,4 @@
 import { cache, cacheKey } from "../../lib/cache.js";
-import { logger } from "../../lib/logger.js";
 import { env } from "../../config/env.js";
 import { deduplicateArticles, deduplicateBySource } from "./dedupe.js";
 import { providerManager } from "./providers/providerManager.js";

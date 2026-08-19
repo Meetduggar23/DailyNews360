@@ -1,11 +1,10 @@
 import * as React from "react";
 import { useParams, Link } from "react-router-dom";
-import { SlidersHorizontal, RotateCcw, X } from "lucide-react";
+import { SlidersHorizontal, RotateCcw } from "lucide-react";
 import { useCategoryNews } from "@/hooks/useNews";
 import { ArticleCard } from "@/components/news/ArticleCard";
 import { SkeletonGrid } from "@/components/common/SkeletonStates";
 import { EmptyState } from "@/components/common/EmptyState";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -152,23 +151,27 @@ export function CategoryPage() {
 
   return (
     <div className="container-news py-8">
-      {/* Category hero */}
-      <header className="mb-8 border-b border-line pb-6">
-        <Badge variant="soft" className="mb-3">
-          {label}
-        </Badge>
-        <h1 className="font-serif text-3xl font-bold text-ink md:text-4xl">{label}</h1>
-        <p className="mt-2 max-w-2xl text-sm text-mist">
-          {CATEGORY_DESCRIPTIONS[category] ?? "The latest stories in this category."}
+      {/* Category masthead */}
+      <header className="mb-8 border-b-2 border-ink pb-4 dark:border-ink/80">
+        <p className="font-sans text-xs font-bold uppercase tracking-widest text-accent">
+          DailyNews360 — {label}
         </p>
-        {total > 0 && <p className="mt-3 text-xs text-mist">{total} stories found</p>}
+        <h1 className="mt-2 font-serif text-4xl font-bold uppercase tracking-wide text-ink md:text-5xl">
+          {label}
+        </h1>
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+          <p className="max-w-2xl font-serif text-base italic text-secondary">
+            {CATEGORY_DESCRIPTIONS[category] ?? "The latest stories in this category."}
+          </p>
+          {total > 0 && <p className="font-sans text-xs text-mist">{total} stories found</p>}
+        </div>
       </header>
 
       <div className="grid gap-8 lg:grid-cols-4">
         {/* Filter sidebar - desktop */}
         <aside className="hidden lg:block">
-          <div className="sticky top-24 rounded-xl bg-surface p-5 shadow-card">
-            <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-ink">
+          <div className="sticky top-24 border border-line bg-surface p-5">
+            <div className="mb-4 flex items-center gap-2 border-b border-line pb-3 text-sm font-semibold uppercase tracking-wide text-ink">
               <SlidersHorizontal className="h-4 w-4 text-accent" aria-hidden="true" />
               Filters
             </div>
@@ -180,7 +183,7 @@ export function CategoryPage() {
           {/* Sort + mobile filters */}
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
             <div
-              className="flex items-center gap-1 rounded-lg bg-line/50 p-1"
+              className="flex items-center gap-5 border-b border-line"
               role="group"
               aria-label="Sort stories"
             >
@@ -190,8 +193,10 @@ export function CategoryPage() {
                   onClick={() => setSort(option.value)}
                   aria-pressed={sort === option.value}
                   className={cn(
-                    "rounded-md px-3 py-1.5 text-xs font-medium text-mist transition-colors",
-                    sort === option.value && "bg-surface text-ink shadow-sm",
+                    "-mb-px border-b-2 py-2 text-xs font-semibold uppercase tracking-wide transition-colors",
+                    sort === option.value
+                      ? "border-accent text-ink"
+                      : "border-transparent text-mist hover:text-ink",
                   )}
                 >
                   {option.label}
@@ -239,20 +244,20 @@ export function CategoryPage() {
 
           {!query.isLoading && !query.isError && articles.length > 0 && (
             <>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2">
                 {articles.map((article) => (
                   <ArticleCard key={article.id} article={article} />
                 ))}
               </div>
 
               {hasMore && (
-                <div className="mt-8 flex justify-center">
+                <div className="mt-8 flex justify-center border-t border-line pt-6">
                   <Button
                     variant="outline"
                     onClick={() => setLimit((prev) => prev + 9)}
                     disabled={query.isFetching}
                   >
-                    {query.isFetching ? "Loading…" : "Load more"}
+                    {query.isFetching ? "Loading…" : "Load more stories"}
                   </Button>
                 </div>
               )}
@@ -262,16 +267,23 @@ export function CategoryPage() {
       </div>
 
       {/* Category quick links */}
-      <div className="mt-12 flex flex-wrap gap-2">
-        {CATEGORIES.filter((c) => c.slug !== category).map((c) => (
-          <Link
-            key={c.slug}
-            to={`/category/${c.slug}`}
-            className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-medium text-mist transition-colors hover:border-accent hover:text-accent"
-          >
-            {c.label}
-          </Link>
-        ))}
+      <div className="mt-12 border-t border-line pt-6">
+        <p className="mb-3 font-sans text-xs font-bold uppercase tracking-widest text-mist">
+          More sections
+        </p>
+        <div className="flex flex-wrap gap-x-4 gap-y-2">
+          {CATEGORIES.filter((c) => c.slug !== category).map((c, index) => (
+            <React.Fragment key={c.slug}>
+              {index > 0 && <span className="text-line" aria-hidden="true">|</span>}
+              <Link
+                to={`/category/${c.slug}`}
+                className="font-sans text-sm font-medium text-secondary transition-colors hover:text-accent"
+              >
+                {c.label}
+              </Link>
+            </React.Fragment>
+          ))}
+        </div>
       </div>
     </div>
   );

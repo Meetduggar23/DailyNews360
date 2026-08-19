@@ -16,7 +16,7 @@ const INTEREST_CATEGORIES = [
   "politics",
 ];
 
-const updatePreferencesSchema = z.object({
+export const updatePreferencesSchema = z.object({
   categories: z
     .array(z.string().trim().min(1).max(50))
     .max(20)

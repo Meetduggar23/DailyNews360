@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SectionTitleProps {
@@ -8,22 +7,26 @@ interface SectionTitleProps {
   className?: string;
 }
 
+/**
+ * Newspaper section heading: uppercase serif label over a full rule,
+ * with an understated "View all" link on the right.
+ */
 export function SectionTitle({ title, viewAllTo, className }: SectionTitleProps) {
   return (
-    <div className={cn("mb-5 flex items-center justify-between gap-4", className)}>
-      <h2 className="flex items-center gap-3 font-serif text-2xl font-bold text-ink">
-        <span className="h-6 w-1 rounded-full bg-accent" aria-hidden="true" />
-        {title}
-      </h2>
-      {viewAllTo ? (
-        <Link
-          to={viewAllTo}
-          className="inline-flex items-center gap-1 text-sm font-medium text-accent transition-colors hover:text-accent/80"
-        >
-          View all
-          <ArrowRight className="h-4 w-4" aria-hidden="true" />
-        </Link>
-      ) : null}
+    <div className={cn("mb-4 border-b-2 border-ink pb-2 dark:border-ink/80", className)}>
+      <div className="flex items-end justify-between gap-4">
+        <h2 className="font-serif text-2xl font-bold uppercase tracking-wide text-ink md:text-[1.65rem]">
+          {title}
+        </h2>
+        {viewAllTo ? (
+          <Link
+            to={viewAllTo}
+            className="shrink-0 pb-0.5 font-sans text-xs font-semibold uppercase tracking-wide text-mist transition-colors hover:text-accent"
+          >
+            View all →
+          </Link>
+        ) : null}
+      </div>
     </div>
   );
 }

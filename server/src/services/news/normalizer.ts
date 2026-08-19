@@ -4,7 +4,13 @@ import type { NewsArticle } from "./types.js";
 
 function cleanText(value: unknown): string | null {
   if (typeof value !== "string") return null;
-  const trimmed = value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "").trim();
+  const trimmed = Array.from(value)
+    .filter((ch) => {
+      const code = ch.charCodeAt(0);
+      return code >= 0x20 || code === 0x09 || code === 0x0a || code === 0x0d;
+    })
+    .join("")
+    .trim();
   return trimmed.length > 0 ? trimmed : null;
 }
 
@@ -41,6 +47,7 @@ export interface NormalizedInput {
   content?: string | null;
   imageUrl?: string | null;
   sourceName?: string | null;
+  sourceUrl?: string | null;
   articleUrl?: string | null;
   author?: string | null;
   publishedAt?: string | number | null;
@@ -66,7 +73,9 @@ export function normalizeArticle(input: NormalizedInput): NewsArticle {
     content: firstString(input.content),
     imageUrl: firstString(input.imageUrl),
     sourceName: firstString(input.sourceName) ?? "Unknown source",
-    sourceUrl: articleUrl ? providerSourceUrl(input.provider, articleUrl) : "",
+    sourceUrl:
+      firstString(input.sourceUrl) ??
+      (articleUrl ? providerSourceUrl(input.provider, articleUrl) : ""),
     articleUrl,
     author: firstString(input.author),
     publishedAt: toIsoDate(input.publishedAt) ?? new Date().toISOString(),

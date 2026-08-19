@@ -1,7 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
 import { ImageWithFallback } from "@/components/common/ImageWithFallback";
-import { Badge } from "@/components/ui/badge";
 import { relativeTime } from "@/lib/date";
 import type { NewsArticle } from "@/types";
 
@@ -26,71 +24,99 @@ interface HeroSectionProps {
   secondary: NewsArticle[];
 }
 
+/**
+ * Editorial lead-news grid: one large main story (50-60% of the area),
+ * a secondary story with image, then a row of smaller compact stories.
+ * Uses thin dividers, not cards.
+ */
 export function HeroSection({ main, secondary }: HeroSectionProps) {
+  const [second, ...rest] = secondary;
+
   return (
-    <section className="grid gap-6 lg:grid-cols-3" aria-label="Top stories">
-      {/* Main story */}
-      <Link
-        to={`/article/${main.id}`}
-        className="group relative overflow-hidden rounded-xl bg-surface shadow-card lg:col-span-2"
-      >
-        <div className="relative overflow-hidden">
-          <ImageWithFallback src={main.imageUrl} alt={main.title} aspect="aspect-[16/9]" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent transition-opacity group-hover:opacity-80" />
-        </div>
-        <div className="absolute inset-x-0 bottom-0 p-5 text-white md:p-7">
-          <Badge variant="soft" className="mb-3 bg-white/20 text-white">
+    <section aria-label="Lead stories">
+      <div className="grid gap-8 lg:grid-cols-3">
+        {/* Main story */}
+        <Link to={`/article/${main.id}`} className="group block lg:col-span-2">
+          <div className="overflow-hidden">
+            <ImageWithFallback
+              src={main.imageUrl}
+              alt={main.title}
+              aspect="aspect-[16/9]"
+              className="transition-transform duration-500 group-hover:scale-[1.02]"
+            />
+          </div>
+          <p className="mt-4 font-sans text-xs font-bold uppercase tracking-widest text-accent">
             {categoryLabel(main.category)}
-          </Badge>
-          <h1 className="font-serif text-2xl font-bold leading-tight md:text-4xl">
+          </p>
+          <h1 className="mt-2 font-serif text-3xl font-bold leading-tight text-ink transition-colors group-hover:text-accent md:text-[2.6rem] md:leading-[1.1]">
             {main.title}
           </h1>
           {main.description ? (
-            <p className="mt-3 line-clamp-2 max-w-2xl text-sm text-white/85 md:text-base">
+            <p className="mt-3 line-clamp-3 max-w-3xl font-serif text-[17px] leading-relaxed text-secondary">
               {main.description}
             </p>
           ) : null}
-          <p className="mt-4 flex items-center gap-2 text-xs text-white/80 md:text-sm">
-            {main.sourceName}
-            <span aria-hidden="true">•</span>
-            {relativeTime(main.publishedAt)}
+          <p className="mt-3 font-sans text-xs text-mist">
+            By {main.author ?? main.sourceName} • {relativeTime(main.publishedAt)}
           </p>
-        </div>
-      </Link>
-
-      {/* Secondary stories */}
-      <div className="flex flex-col gap-4">
-        {secondary.slice(0, 3).map((story) => (
-          <Link
-            key={story.id}
-            to={`/article/${story.id}`}
-            className="group flex gap-4 rounded-xl bg-surface p-3 shadow-card transition-shadow hover:shadow-lifted"
-          >
-            <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-lg">
-              <ImageWithFallback src={story.imageUrl} alt={story.title} aspect="aspect-[4/3]" className="h-full" />
-            </div>
-            <div className="flex min-w-0 flex-col">
-              <span className="mb-1 text-[11px] font-medium uppercase tracking-wide text-accent">
-                {categoryLabel(story.category)}
-              </span>
-              <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-ink group-hover:text-accent">
-                {story.title}
-              </h3>
-              <p className="mt-auto flex items-center gap-1 pt-1 text-xs text-mist">
-                {story.sourceName} • {relativeTime(story.publishedAt)}
-              </p>
-            </div>
-          </Link>
-        ))}
-
-        <Link
-          to="/category/top"
-          className="group mt-auto flex items-center justify-center gap-2 rounded-xl border border-dashed border-line py-3 text-sm font-medium text-mist transition-colors hover:border-accent hover:text-accent"
-        >
-          Browse all top stories
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
         </Link>
+
+        {/* Secondary story */}
+        {second ? (
+          <Link
+            to={`/article/${second.id}`}
+            className="group block border-t-2 border-ink pt-4 dark:border-ink/80"
+          >
+            <div className="overflow-hidden">
+              <ImageWithFallback
+                src={second.imageUrl}
+                alt={second.title}
+                aspect="aspect-[16/10]"
+                className="transition-transform duration-500 group-hover:scale-[1.02]"
+              />
+            </div>
+            <p className="mt-3 font-sans text-[11px] font-bold uppercase tracking-widest text-accent">
+              {categoryLabel(second.category)}
+            </p>
+            <h2 className="mt-1.5 font-serif text-xl font-bold leading-snug text-ink transition-colors group-hover:text-accent">
+              {second.title}
+            </h2>
+            {second.description ? (
+              <p className="mt-2 line-clamp-2 font-sans text-sm leading-relaxed text-secondary">
+                {second.description}
+              </p>
+            ) : null}
+            <p className="mt-2 font-sans text-xs text-mist">
+              {second.sourceName} • {relativeTime(second.publishedAt)}
+            </p>
+          </Link>
+        ) : null}
       </div>
+
+      {/* Compact secondary row */}
+      {rest.length > 0 ? (
+        <div className="mt-8 grid grid-cols-1 gap-6 border-t border-line pt-6 sm:grid-cols-2 lg:grid-cols-3">
+          {rest.slice(0, 3).map((story) => (
+            <Link
+              key={story.id}
+              to={`/article/${story.id}`}
+              className="group flex gap-3 border-l-2 border-line pl-4 transition-colors hover:border-accent"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="font-sans text-[11px] font-bold uppercase tracking-widest text-accent">
+                  {categoryLabel(story.category)}
+                </p>
+                <h3 className="mt-1 line-clamp-3 font-serif text-[16px] font-bold leading-snug text-ink transition-colors group-hover:text-accent">
+                  {story.title}
+                </h3>
+                <p className="mt-1.5 font-sans text-xs text-mist">
+                  {story.sourceName} • {relativeTime(story.publishedAt)}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }

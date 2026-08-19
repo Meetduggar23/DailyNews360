@@ -8,7 +8,7 @@ import { newsService } from "../services/news/newsService.js";
 import { AppError } from "../utils/errors.js";
 import { fail, ok } from "../utils/response.js";
 
-const recordHistorySchema = z.object({
+export const recordHistorySchema = z.object({
   articleId: z.string().trim().min(1).max(200),
   category: z.string().trim().max(80).nullable().optional(),
   source: z.string().trim().max(200).nullable().optional(),
@@ -74,7 +74,9 @@ export async function forYouController(req: Request, res: Response): Promise<voi
     const signals = personalizationService.buildSignals(
       preferred,
       history,
-      bookmarks,
+      // Bookmark rows don't store a category; the feed's bookmark signal
+      // therefore has no category signal to contribute today.
+      bookmarks.map(() => ({ category: null as string | null })),
     );
 
     let ranked = personalizationService.rank(pool, signals);

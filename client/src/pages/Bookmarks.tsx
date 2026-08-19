@@ -12,6 +12,7 @@ import { CATEGORIES } from "@/constants";
 
 interface BookmarkItem {
   articleId: string;
+  articleUrl: string;
   title: string;
   imageUrl: string | null;
   sourceName: string;
@@ -31,6 +32,7 @@ export function BookmarksPage() {
   const items: BookmarkItem[] = user
     ? serverBookmarks.map((b) => ({
         articleId: b.articleId,
+        articleUrl: b.articleUrl,
         title: b.title,
         imageUrl: b.imageUrl,
         sourceName: b.sourceName,
@@ -49,12 +51,14 @@ export function BookmarksPage() {
 
   return (
     <div className="container-news py-8">
-      <header className="mb-8 border-b border-line pb-6">
+      <header className="mb-8 border-b-2 border-ink pb-4 dark:border-ink/80">
         <div className="flex items-center gap-3">
           <Bookmark className="h-6 w-6 text-accent" aria-hidden="true" />
           <div>
-            <h1 className="font-serif text-3xl font-bold text-ink">Bookmarks</h1>
-            <p className="mt-1 text-sm text-mist">
+            <h1 className="font-serif text-4xl font-bold uppercase tracking-wide text-ink">
+              Saved Stories
+            </h1>
+            <p className="mt-1 font-serif text-base italic text-secondary">
               {user
                 ? "Your saved stories, synced to your account."
                 : "Stories you've saved on this device."}
@@ -62,7 +66,7 @@ export function BookmarksPage() {
           </div>
         </div>
         {!user && (
-          <p className="mt-3 text-xs text-mist">
+          <p className="mt-3 font-sans text-xs text-mist">
             <Link to="/login" className="font-medium text-accent hover:underline">
               Sign in
             </Link>{" "}
@@ -86,13 +90,13 @@ export function BookmarksPage() {
             className="pl-9"
           />
         </div>
-        <div className="flex gap-2 overflow-x-auto">
+        <div className="flex gap-5 overflow-x-auto border-b border-line">
           <button
             onClick={() => setCategory("all")}
             className={
               category === "all"
-                ? "rounded-full bg-accent px-3 py-1.5 text-xs font-medium text-white"
-                : "rounded-full border border-line px-3 py-1.5 text-xs font-medium text-mist"
+                ? "-mb-px shrink-0 border-b-2 border-accent text-xs font-semibold uppercase tracking-wide text-ink"
+                : "-mb-px shrink-0 border-b-2 border-transparent text-xs font-semibold uppercase tracking-wide text-mist hover:text-ink"
             }
           >
             All
@@ -103,8 +107,8 @@ export function BookmarksPage() {
               onClick={() => setCategory(c.label)}
               className={
                 category === c.label
-                  ? "rounded-full bg-accent px-3 py-1.5 text-xs font-medium text-white"
-                  : "rounded-full border border-line px-3 py-1.5 text-xs font-medium text-mist"
+                  ? "-mb-px shrink-0 border-b-2 border-accent text-xs font-semibold uppercase tracking-wide text-ink"
+                  : "-mb-px shrink-0 border-b-2 border-transparent text-xs font-semibold uppercase tracking-wide text-mist hover:text-ink"
               }
             >
               {c.label}
@@ -116,7 +120,7 @@ export function BookmarksPage() {
       {!hydrated ? (
         <div className="grid grid-cols-1 gap-4">
           {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="skeleton h-28 rounded-xl" />
+            <div key={index} className="skeleton h-28 rounded" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
@@ -130,18 +134,15 @@ export function BookmarksPage() {
           }
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 divide-y divide-line">
           {filtered.map((item) => (
-            <article
-              key={item.articleId}
-              className="flex flex-col gap-4 rounded-xl bg-surface p-3 shadow-card sm:flex-row sm:items-center"
-            >
-              <Link to={`/article/${item.articleId}`} className="flex flex-1 gap-4">
-                <div className="h-20 w-28 shrink-0 overflow-hidden rounded-lg">
+            <article key={item.articleId} className="flex flex-col gap-4 py-5 sm:flex-row sm:items-center">
+              <Link to={`/article/${item.articleId}`} className="group flex flex-1 gap-4">
+                <div className="h-20 w-28 shrink-0 overflow-hidden">
                   <ImageWithFallback src={item.imageUrl} alt={item.title} aspect="aspect-[4/3]" className="h-full" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="line-clamp-2 font-serif text-lg font-bold leading-snug text-ink hover:text-accent">
+                  <h3 className="line-clamp-2 font-serif text-lg font-bold leading-snug text-ink transition-colors group-hover:text-accent">
                     {item.title}
                   </h3>
                   <p className="mt-1 text-xs text-mist">
@@ -186,7 +187,7 @@ function BookmarkRemoveButton({ articleId }: { articleId: string }) {
             articleUrl: item?.articleUrl ?? local?.articleUrl ?? "",
             imageUrl: item?.imageUrl ?? local?.imageUrl ?? null,
             sourceName: item?.sourceName ?? local?.sourceName ?? "",
-            publishedAt: item?.publishedAt ?? local?.publishedAt ?? null,
+            publishedAt: item?.publishedAt ?? local?.publishedAt ?? "",
             description: null,
             content: null,
             sourceUrl: item?.articleUrl ?? local?.articleUrl ?? "",

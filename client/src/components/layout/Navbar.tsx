@@ -2,8 +2,6 @@ import * as React from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   Bookmark,
-  ChevronDown,
-  LayoutGrid,
   LogIn,
   Menu,
   Moon,
@@ -14,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { Logo } from "@/components/common/Logo";
-import { SearchBox, SearchOverlay } from "@/components/common/SearchBox";
+import { SearchOverlay } from "@/components/common/SearchBox";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import {
@@ -25,7 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { NAV_LINKS } from "@/constants";
+import { NAV_BAR } from "@/constants";
 import { useAuthStore } from "@/stores/auth.store";
 import { useThemeStore } from "@/stores/theme.store";
 import { useToast } from "@/components/ui/toaster";
@@ -39,9 +37,9 @@ function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label={`Switch to ${resolved === "dark" ? "light" : "dark"} mode`}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-full text-ink transition-colors hover:bg-line/50"
+      className="inline-flex h-8 w-8 items-center justify-center text-ink transition-colors hover:text-accent"
     >
-      <Icon className="h-5 w-5" aria-hidden="true" />
+      <Icon className="h-4 w-4" aria-hidden="true" />
     </button>
   );
 }
@@ -58,17 +56,12 @@ function UserMenu() {
 
   if (!user) {
     return (
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
-          <Link to="/login">
-            <LogIn className="h-4 w-4" aria-hidden="true" />
-            Sign in
-          </Link>
-        </Button>
-        <Button size="sm" asChild>
-          <Link to="/register">Join free</Link>
-        </Button>
-      </div>
+      <Button variant="outline" size="sm" asChild>
+        <Link to="/login">
+          <LogIn className="h-3.5 w-3.5" aria-hidden="true" />
+          Sign in
+        </Link>
+      </Button>
     );
   }
 
@@ -77,9 +70,9 @@ function UserMenu() {
       <DropdownMenuTrigger asChild>
         <button
           aria-label="Account menu"
-          className="flex h-9 items-center gap-2 rounded-full ring-line transition-shadow hover:ring-1"
+          className="flex h-8 items-center rounded-full ring-line transition-shadow hover:ring-1"
         >
-          <Avatar name={user.name} />
+          <Avatar name={user.name} className="h-8 w-8 text-xs" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -110,6 +103,15 @@ function UserMenu() {
   );
 }
 
+function todayLine(): string {
+  return new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 export function Navbar() {
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -117,7 +119,7 @@ export function Navbar() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    const onScroll = () => setScrolled(window.scrollY > 90);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -148,111 +150,133 @@ export function Navbar() {
 
   return (
     <>
-      <header
-        className={cn(
-          "sticky top-0 z-50 border-b border-transparent transition-all duration-300",
-          scrolled
-            ? "border-line bg-paper/80 shadow-sm backdrop-blur-xl"
-            : "bg-paper/40 backdrop-blur-md",
-        )}
-      >
-        <div className="container-news flex h-16 items-center justify-between gap-4">
-          {/* Mobile hamburger */}
-          <button
-            onClick={() => setMobileOpen(true)}
-            aria-label="Open menu"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-ink transition-colors hover:bg-line/50 lg:hidden"
-          >
-            <Menu className="h-5 w-5" aria-hidden="true" />
-          </button>
+      {/* Masthead */}
+      <header className="border-b border-line bg-paper">
+        <div className="container-news">
+          {/* Top utility row */}
+          <div className="flex items-center justify-between gap-4 py-2 text-[11px] uppercase tracking-wider text-mist">
+            <p className="hidden md:block">{todayLine()}</p>
+            <p className="hidden md:block">India Edition</p>
 
-          <Logo />
+            {/* Mobile: hamburger + brand */}
+            <div className="flex w-full items-center justify-between md:hidden">
+              <button
+                onClick={() => setMobileOpen(true)}
+                aria-label="Open menu"
+                className="inline-flex h-8 w-8 items-center justify-center text-ink"
+              >
+                <Menu className="h-5 w-5" aria-hidden="true" />
+              </button>
+              <Link to="/" aria-label="DailyNews360 home">
+                <img
+                  src="/logo360.png"
+                  alt="DailyNews360"
+                  className="h-9 w-auto"
+                />
+              </Link>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setSearchOpen(true)}
+                  aria-label="Open search"
+                  className="inline-flex h-8 w-8 items-center justify-center text-ink"
+                >
+                  <Search className="h-5 w-5" aria-hidden="true" />
+                </button>
+                <ThemeToggle />
+              </div>
+            </div>
 
-          {/* Desktop search */}
-          <div className="hidden flex-1 justify-center px-6 md:flex md:max-w-md">
-            <SearchBox
-              className="w-full"
-              onSearch={() => navigate("/search")}
-            />
+            {/* Desktop: date left, actions right */}
+            <div className="hidden items-center gap-4 md:flex">
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="inline-flex items-center gap-2 text-ink transition-colors hover:text-accent"
+              >
+                <Search className="h-4 w-4" aria-hidden="true" />
+                Search
+              </button>
+              <ThemeToggle />
+              <Link
+                to="/bookmarks"
+                aria-label="Bookmarks"
+                className="inline-flex items-center gap-2 text-ink transition-colors hover:text-accent"
+              >
+                <Bookmark className="h-4 w-4" aria-hidden="true" />
+                Saved
+              </Link>
+              <UserMenu />
+            </div>
           </div>
 
-          <nav className="flex items-center gap-1 md:gap-2" aria-label="Primary">
-            {/* Categories */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  aria-label="Browse categories"
-                  className="hidden h-9 items-center gap-1 rounded-full px-3 text-sm font-medium text-ink transition-colors hover:bg-line/50 lg:inline-flex"
-                >
-                  <LayoutGrid className="h-4 w-4" aria-hidden="true" />
-                  Categories
-                  <ChevronDown className="h-3.5 w-3.5 text-mist" aria-hidden="true" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="max-h-80 overflow-y-auto">
-                {NAV_LINKS.map((link) => (
-                  <DropdownMenuItem key={link.to} asChild>
-                    <Link to={link.to}>{link.label}</Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <NavLink
-              to="/bookmarks"
-              aria-label="Bookmarks"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full text-ink transition-colors hover:bg-line/50"
-            >
-              <Bookmark className="h-5 w-5" aria-hidden="true" />
-            </NavLink>
-
-            {/* Mobile search */}
-            <button
-              onClick={() => setSearchOpen(true)}
-              aria-label="Open search"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full text-ink transition-colors hover:bg-line/50 md:hidden"
-            >
-              <Search className="h-5 w-5" aria-hidden="true" />
-            </button>
-
-            <ThemeToggle />
-            <UserMenu />
-          </nav>
+          {/* Masthead brand */}
+          <div className="flex justify-center border-y border-line py-5 md:py-6">
+            <Logo showTagline />
+          </div>
         </div>
       </header>
 
+      {/* Sticky category navigation */}
+      <nav
+        aria-label="Sections"
+        className={cn(
+          "sticky top-0 z-50 border-b border-line bg-paper transition-shadow",
+          scrolled && "bg-paper/95 shadow-sm backdrop-blur-md",
+        )}
+      >
+        <div className="container-news">
+          <div className="flex items-center gap-5 overflow-x-auto py-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {NAV_BAR.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.to === "/"}
+                className={({ isActive }) =>
+                  cn(
+                    "whitespace-nowrap text-[13px] font-semibold uppercase tracking-wide text-secondary transition-colors hover:text-ink",
+                    isActive && "text-accent",
+                  )
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </div>
+        </div>
+      </nav>
+
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-[80] lg:hidden" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-[80] md:hidden" role="dialog" aria-modal="true">
           <button
-            className="absolute inset-0 bg-black/50"
+            className="absolute inset-0 bg-black/40"
             onClick={() => setMobileOpen(false)}
             aria-label="Close menu"
           />
           <nav
             aria-label="Mobile menu"
-            className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-surface shadow-lifted"
+            className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-surface"
           >
-            <div className="flex items-center justify-between border-b border-line px-5 py-4">
-              <Logo onClick={() => setMobileOpen(false)} />
+            <div className="flex items-center justify-between border-b border-line px-4 py-3">
+              <img src="/logo360.png" alt="DailyNews360" className="h-10 w-auto" />
               <button
                 onClick={() => setMobileOpen(false)}
                 aria-label="Close menu"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-ink transition-colors hover:bg-line/50"
+                className="inline-flex h-8 w-8 items-center justify-center text-ink"
               >
                 <X className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
-            <ul className="flex-1 overflow-y-auto px-3 py-4">
-              {NAV_LINKS.map((link) => (
+            <ul className="flex-1 overflow-y-auto px-2 py-3">
+              {NAV_BAR.map((link) => (
                 <li key={link.to}>
                   <NavLink
                     to={link.to}
+                    end={link.to === "/"}
                     onClick={() => setMobileOpen(false)}
                     className={({ isActive }) =>
                       cn(
-                        "block rounded-lg px-3 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-line/40",
-                        isActive && "bg-line/60 text-accent",
+                        "block border-b border-line/60 px-3 py-3 text-sm font-semibold uppercase tracking-wide text-ink",
+                        isActive && "text-accent",
                       )
                     }
                   >
@@ -264,6 +288,7 @@ export function Navbar() {
             <div className="border-t border-line p-4">
               <Button
                 variant="outline"
+                size="sm"
                 className="w-full"
                 onClick={() => {
                   setMobileOpen(false);

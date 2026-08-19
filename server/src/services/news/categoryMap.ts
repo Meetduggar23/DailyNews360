@@ -1,5 +1,3 @@
-import type { NewsArticle } from "./types.js";
-
 /**
  * Maps provider-specific category slugs to DailyNews360 category slugs.
  * Provider adapters use their own slug as a fallback when no mapping exists.

@@ -2,9 +2,9 @@ import type { Request, Response } from "express";
 import { z } from "zod";
 import { newsService } from "../services/news/newsService.js";
 import { preferenceService } from "../services/preference.service.js";
-import { bookmarkService } from "../services/bookmark.service.js";
 import { historyService } from "../services/history.service.js";
 import { CATEGORIES } from "../services/news/types.js";
+import type { NewsQuery, SortOption } from "../services/news/types.js";
 import { fail, ok } from "../utils/response.js";
 
 const pageSizeSchema = z.coerce.number().int().min(1).max(50).default(15);
@@ -50,12 +50,16 @@ export async function categoryNewsController(req: Request, res: Response): Promi
   }
   const pageSize = pageSizeSchema.parse(req.query["pageSize"] ?? 15);
   const page = pageSchema.parse(req.query["page"] ?? 1);
-  const query = {
+  const sortRaw = req.query["sort"] ? String(req.query["sort"]) : "latest";
+  const sort: SortOption = ["latest", "relevance", "popular"].includes(sortRaw)
+    ? (sortRaw as SortOption)
+    : "latest";
+  const query: NewsQuery = {
     pageSize,
     page,
     country: req.query["country"] ? String(req.query["country"]) : undefined,
     language: req.query["language"] ? String(req.query["language"]) : undefined,
-    sort: req.query["sort"] ? String(req.query["sort"]) : "latest",
+    sort,
   };
   try {
     const result = await newsService.getCategoryNews(category, query, await userSignals(req));

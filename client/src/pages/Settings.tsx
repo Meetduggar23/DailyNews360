@@ -112,20 +112,29 @@ export function SettingsPage() {
 
   return (
     <div className="container-news max-w-3xl py-8">
-      <h1 className="mb-8 font-serif text-3xl font-bold text-ink">Settings</h1>
+      <header className="mb-8 border-b-2 border-ink pb-4 dark:border-ink/80">
+        <p className="font-sans text-xs font-bold uppercase tracking-widest text-accent">
+          DailyNews360 — Account
+        </p>
+        <h1 className="mt-2 font-serif text-4xl font-bold uppercase tracking-wide text-ink">
+          Settings
+        </h1>
+      </header>
 
       {/* Appearance */}
-      <section className="mb-6 rounded-xl bg-surface p-6 shadow-card">
-        <h2 className="mb-4 text-sm font-semibold text-ink">Appearance</h2>
-        <div className="grid grid-cols-3 gap-2">
+      <section className="mb-6 border border-line bg-surface p-6">
+        <h2 className="mb-4 border-b border-line pb-3 font-serif text-xl font-bold uppercase tracking-wide text-ink">
+          Appearance
+        </h2>
+        <div className="grid grid-cols-3 gap-px border border-line bg-line">
           {THEME_OPTIONS.map(({ value, label, Icon }) => (
             <button
               key={value}
               onClick={() => setThemeMode(value)}
               aria-pressed={themeMode === value}
               className={cn(
-                "flex flex-col items-center gap-2 rounded-lg border border-line px-3 py-4 text-sm font-medium text-ink transition-colors hover:bg-line/40",
-                themeMode === value && "border-accent/40 bg-accent/10 text-accent",
+                "flex flex-col items-center gap-2 bg-paper px-3 py-4 font-sans text-sm font-medium text-secondary transition-colors",
+                themeMode === value && "bg-accent/10 text-accent",
               )}
             >
               <Icon className="h-5 w-5" aria-hidden="true" />
@@ -138,8 +147,10 @@ export function SettingsPage() {
 
       {/* Account */}
       {user && (
-        <section className="mb-6 rounded-xl bg-surface p-6 shadow-card">
-          <h2 className="mb-4 text-sm font-semibold text-ink">Account</h2>
+        <section className="mb-6 border border-line bg-surface p-6">
+          <h2 className="mb-4 border-b border-line pb-3 font-serif text-xl font-bold uppercase tracking-wide text-ink">
+            Account
+          </h2>
           <div className="flex flex-col gap-3">
             <label className="flex flex-col gap-1.5">
               <span className="text-xs font-medium text-mist">Name</span>
@@ -177,12 +188,14 @@ export function SettingsPage() {
       )}
 
       {/* Feed preferences */}
-      <section className="mb-6 rounded-xl bg-surface p-6 shadow-card">
-        <h2 className="mb-1 text-sm font-semibold text-ink">Feed preferences</h2>
-        <p className="mb-4 text-xs text-mist">
+      <section className="mb-6 border border-line bg-surface p-6">
+        <h2 className="mb-1 font-serif text-xl font-bold uppercase tracking-wide text-ink">
+          Feed preferences
+        </h2>
+        <p className="mb-4 font-sans text-sm text-mist">
           Choose topics to personalize your For You feed. Changes apply immediately.
         </p>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3">
           {INTEREST_CATEGORIES.map((category) => {
             const active = (preferencesQuery.data?.categories ?? []).includes(category);
             return (
@@ -191,11 +204,12 @@ export function SettingsPage() {
                 onClick={() => toggleInterest(category)}
                 aria-pressed={active}
                 className={cn(
-                  "rounded-lg border border-line px-3 py-2 text-sm font-medium text-ink transition-colors hover:bg-line/40",
-                  active && "border-accent/40 bg-accent/10 text-accent",
+                  "flex items-center justify-between gap-2 border-b border-line/60 py-2.5 text-left font-sans text-sm font-medium text-ink transition-colors hover:text-accent",
+                  active && "text-accent",
                 )}
               >
                 {INTEREST_LABELS[category]}
+                {active && <Check className="h-4 w-4 shrink-0" aria-hidden="true" />}
               </button>
             );
           })}
@@ -203,8 +217,10 @@ export function SettingsPage() {
       </section>
 
       {/* Privacy */}
-      <section className="mb-6 rounded-xl bg-surface p-6 shadow-card">
-        <h2 className="mb-4 text-sm font-semibold text-ink">Privacy</h2>
+      <section className="mb-6 border border-line bg-surface p-6">
+        <h2 className="mb-4 border-b border-line pb-3 font-serif text-xl font-bold uppercase tracking-wide text-ink">
+          Privacy
+        </h2>
         <div className="flex flex-col gap-3">
           {user && (
             <div className="flex items-center justify-between gap-4">

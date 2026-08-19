@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { ZodSchema } from "zod";
+import type { ZodSchema } from "zod";
 import { AppError } from "../utils/errors.js";
 
 type Source = "body" | "query" | "params";

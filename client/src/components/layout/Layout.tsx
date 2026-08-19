@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useLocation } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
@@ -7,11 +7,7 @@ import { MobileNav } from "./MobileNav";
 import { BackToTop } from "@/components/common/BackToTop";
 import { useThemeStore } from "@/stores/theme.store";
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-export function Layout({ children }: LayoutProps) {
+export function Layout() {
   const location = useLocation();
   const init = useThemeStore((state) => state.init);
 
@@ -36,7 +32,7 @@ export function Layout({ children }: LayoutProps) {
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="flex-1 pb-16 lg:pb-0"
         >
-          {children}
+          <Outlet />
         </motion.main>
       </AnimatePresence>
       <Footer />

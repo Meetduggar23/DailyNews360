@@ -11,10 +11,13 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { relativeTime } from "@/lib/date";
 import { INTEREST_CATEGORIES } from "@/constants";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export function ProfilePage() {
   const user = useAuthStore((state) => state.user);
   const bookmarks = useBookmarkStore((state) => state.serverBookmarks);
+
+  usePageMeta({ title: "Profile" });
 
   const preferencesQuery = useQuery({
     queryKey: ["preferences"],
@@ -44,15 +47,19 @@ export function ProfilePage() {
 
   return (
     <div className="container-news py-8">
-      <header className="mb-8 flex flex-col items-start gap-4 rounded-xl bg-surface p-6 shadow-card sm:flex-row sm:items-center sm:justify-between">
+      {/* Reader profile */}
+      <header className="mb-8 flex flex-col items-start gap-4 border border-line bg-surface p-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <Avatar name={user.name} className="h-14 w-14 text-lg" />
           <div>
-            <h1 className="font-serif text-2xl font-bold text-ink">{user.name}</h1>
-            <p className="text-sm text-mist">{user.email}</p>
+            <p className="font-sans text-xs font-bold uppercase tracking-widest text-accent">
+              Reader profile
+            </p>
+            <h1 className="font-serif text-3xl font-bold text-ink">{user.name}</h1>
+            <p className="font-sans text-sm text-mist">{user.email}</p>
           </div>
         </div>
-        <Button variant="outline" asChild>
+        <Button variant="outline" size="sm" asChild>
           <Link to="/settings">
             <SettingsIcon className="h-4 w-4" aria-hidden="true" />
             Account settings
@@ -62,23 +69,23 @@ export function ProfilePage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Interests */}
-        <section className="rounded-xl bg-surface p-6 shadow-card">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
+        <section className="border border-line bg-surface p-6">
+          <div className="mb-4 flex items-center justify-between border-b border-line pb-3">
+            <h2 className="flex items-center gap-2 font-serif text-lg font-bold text-ink">
               <Sparkles className="h-4 w-4 text-accent" aria-hidden="true" />
               Your interests
             </h2>
-            <Link to="/for-you" className="text-xs font-medium text-accent hover:underline">
+            <Link to="/for-you" className="font-sans text-xs font-semibold uppercase tracking-wide text-accent hover:underline">
               Manage
             </Link>
           </div>
           {preferencesQuery.isLoading ? (
             <div className="flex gap-2">
-              <Skeleton className="h-7 w-20 rounded-full" />
-              <Skeleton className="h-7 w-24 rounded-full" />
+              <Skeleton className="h-6 w-20 rounded" />
+              <Skeleton className="h-6 w-24 rounded" />
             </div>
           ) : interests.length === 0 ? (
-            <p className="text-sm text-mist">
+            <p className="font-sans text-sm text-mist">
               No interests selected yet.{" "}
               <Link to="/for-you" className="text-accent hover:underline">
                 Choose topics
@@ -86,24 +93,27 @@ export function ProfilePage() {
               to personalize your feed.
             </p>
           ) : (
-            <div className="flex flex-wrap gap-2">
-              {interests.map((interest) => (
-                <span key={interest} className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
-                  {INTEREST_CATEGORIES.find((c) => c === interest) ?? interest}
-                </span>
+            <ul className="flex flex-wrap gap-x-4 gap-y-2">
+              {interests.map((interest, index) => (
+                <React.Fragment key={interest}>
+                  {index > 0 && <span className="text-line" aria-hidden="true">|</span>}
+                  <li className="font-sans text-sm font-medium text-ink">
+                    {INTEREST_CATEGORIES.find((c) => c === interest) ?? interest}
+                  </li>
+                </React.Fragment>
               ))}
-            </div>
+            </ul>
           )}
         </section>
 
         {/* Reading history */}
-        <section className="rounded-xl bg-surface p-6 shadow-card">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
+        <section className="border border-line bg-surface p-6">
+          <div className="mb-4 flex items-center justify-between border-b border-line pb-3">
+            <h2 className="flex items-center gap-2 font-serif text-lg font-bold text-ink">
               <Clock className="h-4 w-4 text-accent" aria-hidden="true" />
               Recent reading
             </h2>
-            <Link to="/settings" className="text-xs font-medium text-accent hover:underline">
+            <Link to="/settings" className="font-sans text-xs font-semibold uppercase tracking-wide text-accent hover:underline">
               Manage
             </Link>
           </div>
@@ -113,18 +123,18 @@ export function ProfilePage() {
               <Skeleton className="h-4 w-3/4" />
             </div>
           ) : (historyQuery.data?.history.length ?? 0) === 0 ? (
-            <p className="text-sm text-mist">No reading history yet. Open a story to get started.</p>
+            <p className="font-sans text-sm text-mist">No reading history yet. Open a story to get started.</p>
           ) : (
             <ul className="divide-y divide-line">
               {historyQuery.data?.history.slice(0, 5).map((entry) => (
                 <li key={entry.articleId} className="flex items-center justify-between py-2">
                   <Link
                     to={`/article/${entry.articleId}`}
-                    className="min-w-0 truncate text-sm text-ink hover:text-accent"
+                    className="min-w-0 truncate font-serif text-[15px] font-medium text-ink hover:text-accent"
                   >
                     {entry.category ?? "Story"}
                   </Link>
-                  <span className="shrink-0 pl-3 text-xs text-mist">
+                  <span className="shrink-0 pl-3 font-sans text-xs text-mist">
                     {relativeTime(entry.viewedAt)}
                   </span>
                 </li>
@@ -135,16 +145,14 @@ export function ProfilePage() {
       </div>
 
       {/* Saved articles summary */}
-      <section className="mt-6 rounded-xl bg-surface p-6 shadow-card">
-        <div className="flex items-center justify-between">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
-            <Bookmark className="h-4 w-4 text-accent" aria-hidden="true" />
-            Saved articles
-          </h2>
-          <Link to="/bookmarks" className="text-xs font-medium text-accent hover:underline">
-            View all ({bookmarks.length})
-          </Link>
-        </div>
+      <section className="mt-6 flex items-center justify-between border border-line bg-surface p-6">
+        <h2 className="flex items-center gap-2 font-serif text-lg font-bold text-ink">
+          <Bookmark className="h-4 w-4 text-accent" aria-hidden="true" />
+          Saved articles
+        </h2>
+        <Link to="/bookmarks" className="font-sans text-xs font-semibold uppercase tracking-wide text-accent hover:underline">
+          View all ({bookmarks.length})
+        </Link>
       </section>
     </div>
   );

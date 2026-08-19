@@ -40,15 +40,20 @@ export function LoginPage() {
   return (
     <div className="container-news flex min-h-[70vh] items-center justify-center py-12">
       <div className="w-full max-w-md">
-        <div className="mb-6 text-center">
-          <h1 className="font-serif text-3xl font-bold text-ink">Welcome back</h1>
-          <p className="mt-2 text-sm text-mist">{BRAND.taglineAlternative}</p>
+        <div className="mb-8 border-b-2 border-ink pb-4 text-center dark:border-ink/80">
+          <p className="font-sans text-xs font-bold uppercase tracking-widest text-accent">
+            DailyNews360
+          </p>
+          <h1 className="mt-2 font-serif text-4xl font-bold uppercase tracking-wide text-ink">
+            Welcome Back
+          </h1>
+          <p className="mt-2 font-serif text-base italic text-secondary">{BRAND.taglineAlternative}</p>
         </div>
 
-        <form onSubmit={submit} className="rounded-xl bg-surface p-6 shadow-card">
+        <form onSubmit={submit} className="border border-line bg-surface p-6">
           <div className="flex flex-col gap-4">
             <label className="flex flex-col gap-1.5">
-              <span className="text-sm font-medium text-ink">Email</span>
+              <span className="font-sans text-sm font-medium text-ink">Email</span>
               <Input
                 type="email"
                 value={email}
@@ -59,7 +64,7 @@ export function LoginPage() {
               />
             </label>
             <label className="flex flex-col gap-1.5">
-              <span className="text-sm font-medium text-ink">Password</span>
+              <span className="font-sans text-sm font-medium text-ink">Password</span>
               <Input
                 type="password"
                 value={password}
@@ -71,7 +76,7 @@ export function LoginPage() {
             </label>
 
             {error && (
-              <p role="alert" className="rounded-lg bg-accent/10 px-3 py-2 text-sm text-accent">
+              <p role="alert" className="border border-accent/30 bg-accent/10 px-3 py-2 font-sans text-sm text-accent">
                 {error}
               </p>
             )}
@@ -83,7 +88,7 @@ export function LoginPage() {
           </div>
         </form>
 
-        <p className="mt-5 text-center text-sm text-mist">
+        <p className="mt-5 text-center font-sans text-sm text-mist">
           New to DailyNews360?{" "}
           <Link to="/register" className="font-medium text-accent hover:underline">
             Create a free account

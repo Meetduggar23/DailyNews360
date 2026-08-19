@@ -2,7 +2,8 @@ import * as React from "react";
 import { Newspaper } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface ImageWithFallbackProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+interface ImageWithFallbackProps
+  extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src"> {
   src: string | null | undefined;
   alt: string;
   aspect?: string;

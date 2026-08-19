@@ -32,18 +32,6 @@ function toLocal(article: NewsArticle): LocalBookmark {
   };
 }
 
-function fromBookmark(b: Bookmark): LocalBookmark {
-  return {
-    articleId: b.articleId,
-    articleUrl: b.articleUrl,
-    title: b.title,
-    imageUrl: b.imageUrl,
-    sourceName: b.sourceName,
-    publishedAt: b.publishedAt,
-    savedAt: b.createdAt,
-  };
-}
-
 interface BookmarkState {
   serverBookmarks: Bookmark[];
   localBookmarks: LocalBookmark[];

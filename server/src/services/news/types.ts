@@ -25,6 +25,7 @@ export interface NewsQuery {
   from?: string;
   to?: string;
   sources?: string;
+  sort?: SortOption;
 }
 
 export interface NewsProvider {

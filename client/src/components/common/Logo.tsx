@@ -1,28 +1,39 @@
 import { Link } from "react-router-dom";
+import { BRAND } from "@/constants";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
   onClick?: () => void;
+  showTagline?: boolean;
 }
 
 /**
- * Text-based brand logo. "360" is subtly highlighted in accent.
- * Works on both light and dark backgrounds.
+ * Brand logo: the DailyNews360 mark with the approved primary tagline.
+ * Rendered from the brand image asset; works on light and dark backgrounds.
  */
-export function Logo({ className, onClick }: LogoProps) {
+export function Logo({ className, onClick, showTagline = false }: LogoProps) {
   return (
-    <Link
-      to="/"
-      onClick={onClick}
-      aria-label="DailyNews360 home"
-      className={cn(
-        "inline-flex items-baseline gap-0.5 font-serif text-xl font-bold tracking-tight text-ink transition-opacity hover:opacity-80 md:text-2xl",
-        className,
+    <div className={cn("flex flex-col items-center", className)}>
+      <Link
+        to="/"
+        onClick={onClick}
+        aria-label="DailyNews360 home"
+        className="transition-opacity hover:opacity-80"
+      >
+        <img
+          src="/logo360.png"
+          alt="DailyNews360"
+          width={220}
+          height={220}
+          className="h-auto w-32 max-w-[11rem] md:w-40"
+        />
+      </Link>
+      {showTagline && (
+        <p className="mt-1 font-sans text-[11px] font-medium uppercase tracking-[0.2em] text-mist">
+          {BRAND.tagline}
+        </p>
       )}
-    >
-      DailyNews
-      <span className="text-accent">360</span>
-    </Link>
+    </div>
   );
 }

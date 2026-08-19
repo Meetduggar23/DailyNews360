@@ -10,12 +10,17 @@ import { ShareButton } from "@/components/common/ShareButton";
 import { BookmarkButton } from "@/components/common/BookmarkButton";
 import { ArticleCard } from "@/components/news/ArticleCard";
 import { EmptyState } from "@/components/common/EmptyState";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { relativeTime, formatDateTime } from "@/lib/date";
 import { stripHtml } from "@/lib/utils";
 import { usePageMeta } from "@/hooks/usePageMeta";
+
+function readingTime(text: string | null | undefined): number {
+  if (!text) return 0;
+  const words = stripHtml(text).split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
 
 export function ArticlePage() {
   const { id } = useParams<{ id: string }>();
@@ -47,14 +52,16 @@ export function ArticlePage() {
   if (query.isLoading) {
     return (
       <div className="container-news py-8">
-        <Skeleton className="h-5 w-24" />
-        <Skeleton className="mt-4 h-10 w-full md:w-3/4" />
-        <Skeleton className="mt-3 h-4 w-64" />
-        <Skeleton className="mt-8 aspect-[16/9] w-full rounded-xl" />
-        <div className="mt-8 space-y-3">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-11/12" />
-          <Skeleton className="h-4 w-4/5" />
+        <div className="mx-auto max-w-article">
+          <Skeleton className="h-5 w-24" />
+          <Skeleton className="mt-4 h-12 w-full" />
+          <Skeleton className="mt-3 h-4 w-64" />
+          <Skeleton className="mt-8 aspect-[16/9] w-full rounded" />
+          <div className="mt-8 space-y-3">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-11/12" />
+            <Skeleton className="h-4 w-4/5" />
+          </div>
         </div>
       </div>
     );
@@ -78,76 +85,73 @@ export function ArticlePage() {
     <article className="container-news py-8">
       <ReadProgress />
 
-      {/* Breadcrumb */}
-      <nav aria-label="Breadcrumb" className="mb-4 text-sm text-mist">
-        <Link to={`/category/${article.category}`} className="font-medium text-accent hover:underline">
-          {categoryLabel}
-        </Link>
-      </nav>
+      <div className="mx-auto max-w-article">
+        {/* Breadcrumb */}
+        <nav aria-label="Breadcrumb" className="mb-4 font-sans text-xs uppercase tracking-widest">
+          <Link
+            to={`/category/${article.category}`}
+            className="font-bold text-accent hover:underline"
+          >
+            {categoryLabel}
+          </Link>
+        </nav>
 
-      <header className="max-w-3xl">
-        <Badge variant="soft" className="mb-3">
-          {categoryLabel}
-        </Badge>
-        <h1 className="font-serif text-3xl font-bold leading-tight text-ink md:text-4xl">
-          {article.title}
-        </h1>
-        {article.description ? (
-          <p className="mt-4 text-lg leading-relaxed text-mist">{article.description}</p>
-        ) : null}
-
-        {/* Byline */}
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-y border-line py-4">
-          <div className="flex flex-wrap items-center gap-3 text-sm text-mist">
-            <span className="flex items-center gap-1.5 font-semibold text-ink">
-              <PenLine className="h-4 w-4 text-accent" aria-hidden="true" />
-              {article.author ?? article.sourceName}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="h-4 w-4" aria-hidden="true" />
-              <time dateTime={article.publishedAt}>{formatDateTime(article.publishedAt)}</time>
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <BookmarkButton article={article} variant="full" />
-            <ShareButton
-              title={article.title}
-              url={window.location.href}
-              variant="full"
-            />
-          </div>
-        </div>
-      </header>
-
-      {/* Hero image */}
-      <div className="mt-6 overflow-hidden rounded-xl">
-        <ImageWithFallback src={article.imageUrl} alt={article.title} aspect="aspect-[16/9]" />
-      </div>
-
-      {/* Body */}
-      <div className="mt-8 grid gap-10 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          {article.content ? (
-            <div className="prose prose-sm max-w-none text-ink prose-headings:font-serif">
-              {renderContent(article.content)}
-            </div>
-          ) : (
-            <p className="leading-relaxed text-mist">
-              {article.description ??
-                "Full article content is available from the original publisher."}
+        <header>
+          <h1 className="font-serif text-3xl font-bold leading-tight text-ink md:text-5xl md:leading-[1.12]">
+            {article.title}
+          </h1>
+          {article.description ? (
+            <p className="mt-4 font-serif text-xl leading-relaxed text-secondary">
+              {article.description}
             </p>
-          )}
+          ) : null}
+
+          {/* Byline */}
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-y border-line py-3">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-sans text-sm text-secondary">
+              <span className="flex items-center gap-1.5 font-semibold text-ink">
+                <PenLine className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
+                {article.author ?? article.sourceName}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+                <time dateTime={article.publishedAt}>{formatDateTime(article.publishedAt)}</time>
+              </span>
+              <span className="hidden text-mist sm:inline">•</span>
+              <span className="text-mist">
+                {relativeTime(article.publishedAt)}
+                {readingTime(article.content) > 0
+                  ? ` • ${readingTime(article.content)} min read`
+                  : ""}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <BookmarkButton article={article} variant="full" />
+              <ShareButton title={article.title} url={window.location.href} variant="full" />
+            </div>
+          </div>
+        </header>
+
+        {/* Hero image */}
+        <figure className="mt-6">
+          <ImageWithFallback src={article.imageUrl} alt={article.title} aspect="aspect-[16/9]" />
+        </figure>
+
+        {/* Body */}
+        <div className="mt-8">
+          <div className="prose max-w-none font-serif text-lg leading-[1.75] text-ink prose-headings:font-serif">
+            {renderContent(article.content, article.description)}
+          </div>
 
           {/* Source attribution */}
-          <div className="mt-8 flex flex-col gap-4 rounded-xl bg-surface p-6 shadow-card sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-10 flex flex-col gap-4 border-t border-line py-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-mist">
+              <p className="font-sans text-[11px] font-bold uppercase tracking-widest text-mist">
                 Original source
               </p>
-              <p className="mt-1 font-serif text-lg font-bold text-ink">{article.sourceName}</p>
-              <p className="mt-1 text-xs text-mist">
-                Aggregated by DailyNews360. Original reporting belongs to{" "}
-                {article.sourceName}.
+              <p className="mt-1 font-serif text-xl font-bold text-ink">{article.sourceName}</p>
+              <p className="mt-1 max-w-md font-sans text-xs text-mist">
+                Aggregated by DailyNews360. Original reporting belongs to {article.sourceName}.
               </p>
             </div>
             <Button asChild>
@@ -163,40 +167,53 @@ export function ArticlePage() {
             </Button>
           </div>
         </div>
-
-        {/* Related stories */}
-        <aside aria-label="Related news" className="lg:border-l lg:border-line lg:pl-8">
-          <h2 className="mb-4 flex items-center gap-3 font-serif text-xl font-bold text-ink">
-            <span className="h-5 w-1 rounded-full bg-accent" aria-hidden="true" />
-            Related News
-          </h2>
-          <div className="flex flex-col gap-5">
-            {(related ?? []).slice(0, 4).map((story) => (
-              <ArticleCard key={story.id} article={story} variant="compact" />
-            ))}
-            {related && related.length === 0 && (
-              <p className="text-sm text-mist">No related stories available.</p>
-            )}
-          </div>
-        </aside>
       </div>
+
+      {/* Related stories */}
+      <section className="mt-12 border-t border-line pt-8" aria-label="Related news">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="mb-5 border-b-2 border-ink pb-2 font-serif text-2xl font-bold uppercase tracking-wide text-ink dark:border-ink/80">
+            Related Stories
+          </h2>
+          {(related ?? []).slice(0, 3).length > 0 ? (
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+              {(related ?? []).slice(0, 3).map((story) => (
+                <ArticleCard key={story.id} article={story} variant="standard" />
+              ))}
+            </div>
+          ) : (
+            <p className="font-sans text-sm text-mist">No related stories available.</p>
+          )}
+          {related && related.length > 3 ? (
+            <div className="mt-6">
+              <Button variant="outline" size="sm" asChild>
+                <Link to={`/category/${article.category}`} className="gap-1">
+                  More {categoryLabel} news
+                  <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
+              </Button>
+            </div>
+          ) : null}
+        </div>
+      </section>
     </article>
   );
 }
 
-function renderContent(content: string) {
-  // Simple paragraph rendering for plain-text content from providers.
-  const paragraphs = stripHtml(content)
+function renderContent(content: string | null, description: string | null) {
+  const paragraphs = (content ? stripHtml(content) : description ?? "")
     .split(/\n{2,}/)
     .map((paragraph) => paragraph.trim())
     .filter(Boolean);
 
   if (paragraphs.length <= 1) {
-    return <p className="leading-relaxed text-mist">{stripHtml(content)}</p>;
+    const text = stripHtml(content ?? description ?? "");
+    if (!text) return <p className="text-secondary">Full article content is available from the original publisher.</p>;
+    return <p className="mb-4">{text}</p>;
   }
 
   return paragraphs.map((paragraph, index) => (
-    <p key={index} className="mb-4 leading-relaxed text-ink/90">
+    <p key={index} className="mb-5">
       {paragraph}
     </p>
   ));

@@ -4,7 +4,7 @@ import { bookmarkService } from "../services/bookmark.service.js";
 import { AppError } from "../utils/errors.js";
 import { fail, ok } from "../utils/response.js";
 
-const addBookmarkSchema = z.object({
+export const addBookmarkSchema = z.object({
   articleId: z.string().trim().min(1).max(200),
   articleUrl: z.string().url(),
   title: z.string().trim().min(1).max(500),
