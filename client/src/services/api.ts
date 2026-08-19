@@ -8,6 +8,7 @@ import type {
   PagedNews,
   PreferencesResponse,
   Source,
+  StoryCluster,
   User,
 } from "@/types";
 
@@ -112,6 +113,26 @@ export const api = {
     });
     return request<{ articles: NewsArticle[] }>(
       `/news/trending${qs.size ? `?${qs}` : ""}`,
+    );
+  },
+
+  clusters: (params: Record<string, string | number | undefined> = {}) => {
+    const qs = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== "") qs.set(key, String(value));
+    });
+    return request<{ clusters: StoryCluster[] }>(
+      `/news/clusters${qs.size ? `?${qs}` : ""}`,
+    );
+  },
+
+  mostRead: (params: Record<string, string | number | undefined> = {}) => {
+    const qs = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== "") qs.set(key, String(value));
+    });
+    return request<{ articles: NewsArticle[] }>(
+      `/news/most-read${qs.size ? `?${qs}` : ""}`,
     );
   },
 

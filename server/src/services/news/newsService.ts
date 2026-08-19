@@ -1,8 +1,10 @@
 import { cache, cacheKey } from "../../lib/cache.js";
 import { env } from "../../config/env.js";
 import { deduplicateArticles, deduplicateBySource } from "./dedupe.js";
+import { clusterArticles, findClusterById } from "./cluster.js";
+import type { StoryCluster } from "./cluster.js";
 import { providerManager } from "./providers/providerManager.js";
-import { rankArticles, recordActivity, sortArticles } from "./ranker.js";
+import { rankArticles, rankByPopularity, recordActivity, sortArticles } from "./ranker.js";
 import type {
   NewsArticle,
   NewsQuery,
@@ -104,6 +106,22 @@ export class NewsService {
     return result;
   }
 
+  /** "Every Story. Every Angle." multi-source story clusters. */
+  async getClusters(query: NewsQuery = {}, _signal?: UserSignal): Promise<StoryCluster[]> {
+    const articles = await this.getTopNews({
+      ...query,
+      pageSize: Math.max(query.pageSize ?? 60, 40),
+    });
+    const clusters = clusterArticles(articles);
+    return clusters.slice(0, query.pageSize ?? 5);
+  }
+
+  /** Coverage for a single article: the rest of its story cluster. */
+  async getClusterForArticle(id: string): Promise<StoryCluster | null> {
+    const pool = await this.getTopNews({ pageSize: 60 });
+    return findClusterById(pool, id);
+  }
+
   /** Trending: recency-weighted ranking over the freshest top news. */
   async getTrending(query: NewsQuery = {}, signal?: UserSignal): Promise<NewsArticle[]> {
     const articles = await this.getTopNews({ ...query, pageSize: Math.max(query.pageSize ?? 15, 20) }, signal);
@@ -114,6 +132,16 @@ export class NewsService {
       bookmarkedCategories: signal?.bookmarkedCategories,
     });
     return ranked.slice(0, query.pageSize ?? 10);
+  }
+
+  /** Most Read: popularity-heavy editorial ranking over the top pool. */
+  async getMostRead(query: NewsQuery = {}, signal?: UserSignal): Promise<NewsArticle[]> {
+    const articles = await this.getTopNews({ ...query, pageSize: 40 }, signal);
+    const ranked = rankByPopularity(articles, {
+      userCategories: signal?.categories,
+      bookmarkedCategories: signal?.bookmarkedCategories,
+    });
+    return ranked.slice(0, query.pageSize ?? 6);
   }
 
   /** Lookup a single article by its normalized id across all cached stories. */

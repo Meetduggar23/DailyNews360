@@ -2,6 +2,8 @@ import { Router } from "express";
 import {
   articleController,
   categoryNewsController,
+  clustersController,
+  mostReadController,
   searchNewsController,
   sourcesController,
   topNewsController,
@@ -19,6 +21,8 @@ router.get("/top", topNewsController);
 router.get("/category/:category", categoryNewsController);
 router.get("/search", searchNewsController);
 router.get("/trending", trendingController);
+router.get("/most-read", mostReadController);
+router.get("/clusters", clustersController);
 router.get("/sources", sourcesController);
 router.get("/:id", articleController);
 

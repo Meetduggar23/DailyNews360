@@ -27,7 +27,7 @@ export function ArticlePage() {
   const user = useAuthStore((state) => state.user);
   const query = useArticle(id);
 
-  const { article, related } = query.data ?? {};
+  const { article, related, coverage } = query.data ?? {};
 
   usePageMeta({
     title: article?.title,
@@ -48,6 +48,21 @@ export function ArticlePage() {
       });
     }
   }, [article, user]);
+
+  // Keep a local id->title map so the History page can show real headlines.
+  React.useEffect(() => {
+    if (!article) return;
+    try {
+      const cache = window.localStorage.getItem("dn360:historyTitles");
+      const titles = cache ? (JSON.parse(cache) as Record<string, string>) : {};
+      if (titles[article.id] !== article.title) {
+        titles[article.id] = article.title;
+        window.localStorage.setItem("dn360:historyTitles", JSON.stringify(titles));
+      }
+    } catch {
+      // ignore
+    }
+  }, [article]);
 
   if (query.isLoading) {
     return (
@@ -168,6 +183,53 @@ export function ArticlePage() {
           </div>
         </div>
       </div>
+
+      {/* Every Story. Every Angle. - multi-source coverage */}
+      {coverage && coverage.length > 0 ? (
+        <section className="mt-12 border-t border-line pt-8" aria-label="Every Story, Every Angle">
+          <div className="mx-auto max-w-5xl">
+            <h2 className="mb-1 border-b-2 border-ink pb-2 font-serif text-2xl font-bold uppercase tracking-wide text-ink dark:border-ink/80">
+              Every Story. Every Angle.
+            </h2>
+            <p className="mt-3 max-w-2xl font-serif text-[15px] leading-relaxed text-secondary">
+              This story is being reported by other outlets too. Compare the
+              angles to build a fuller picture.
+            </p>
+            <div className="mt-5 grid gap-0 md:grid-cols-2 md:gap-x-10">
+              <div className="grid gap-0 divide-y divide-line/70 md:pr-10">
+                {coverage.slice(0, Math.ceil(coverage.length / 2)).map((story) => (
+                  <div key={story.id} className="py-3 first:pt-0">
+                    <p className="font-sans text-[11px] font-bold uppercase tracking-widest text-accent">
+                      {story.sourceName}
+                    </p>
+                    <Link
+                      to={`/article/${story.id}`}
+                      className="group mt-1 block font-serif text-[15px] font-semibold leading-snug text-ink transition-colors hover:text-accent"
+                    >
+                      {story.title}
+                    </Link>
+                  </div>
+                ))}
+              </div>
+              <div className="grid gap-0 divide-y divide-line/70">
+                {coverage.slice(Math.ceil(coverage.length / 2)).map((story) => (
+                  <div key={story.id} className="py-3 first:pt-0">
+                    <p className="font-sans text-[11px] font-bold uppercase tracking-widest text-accent">
+                      {story.sourceName}
+                    </p>
+                    <Link
+                      to={`/article/${story.id}`}
+                      className="group mt-1 block font-serif text-[15px] font-semibold leading-snug text-ink transition-colors hover:text-accent"
+                    >
+                      {story.title}
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {/* Related stories */}
       <section className="mt-12 border-t border-line pt-8" aria-label="Related news">

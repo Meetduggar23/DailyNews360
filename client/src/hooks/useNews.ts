@@ -43,6 +43,22 @@ export function useTrending(pageSize = 6) {
   });
 }
 
+export function useClusters(pageSize = 5) {
+  return useQuery({
+    queryKey: ["news", "clusters", pageSize],
+    queryFn: () => api.clusters({ pageSize }),
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useMostRead(pageSize = 6) {
+  return useQuery({
+    queryKey: ["news", "most-read", pageSize],
+    queryFn: () => api.mostRead({ pageSize }),
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
 export function useArticle(id: string | undefined) {
   return useQuery({
     queryKey: ["news", "article", id],

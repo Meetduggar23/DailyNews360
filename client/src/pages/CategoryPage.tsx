@@ -1,6 +1,6 @@
 import * as React from "react";
-import { useParams, Link } from "react-router-dom";
-import { SlidersHorizontal, RotateCcw } from "lucide-react";
+import { useParams, useSearchParams, Link } from "react-router-dom";
+import { SlidersHorizontal, RotateCcw, X } from "lucide-react";
 import { useCategoryNews } from "@/hooks/useNews";
 import { ArticleCard } from "@/components/news/ArticleCard";
 import { SkeletonGrid } from "@/components/common/SkeletonStates";
@@ -42,6 +42,8 @@ interface Filters {
 
 export function CategoryPage() {
   const { category = "top" } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const topic = searchParams.get("topic");
   const [sort, setSort] = React.useState("latest");
   const [limit, setLimit] = React.useState(9);
   const [filters, setFilters] = React.useState<Filters>({
@@ -63,7 +65,16 @@ export function CategoryPage() {
     language: filters.language || undefined,
   });
 
-  const articles = query.data?.articles ?? [];
+  const allArticles = query.data?.articles ?? [];
+  // Sub-category (topic) filtering happens client-side over the fetched pool.
+  const articles = topic
+    ? allArticles.filter((article) =>
+        [article.title, article.description ?? "", article.category]
+          .join(" ")
+          .toLowerCase()
+          .includes(topic.toLowerCase()),
+      )
+    : allArticles;
   const hasMore = query.data?.hasMore ?? false;
   const total = query.data?.total ?? 0;
 
@@ -231,6 +242,21 @@ export function CategoryPage() {
               <div className="mt-2">{FilterControls}</div>
             </DialogContent>
           </Dialog>
+
+          {topic && (
+            <div className="mb-4 inline-flex items-center gap-2 border border-accent/40 bg-accent/5 px-3 py-1.5">
+              <span className="font-sans text-xs font-semibold uppercase tracking-wide text-ink">
+                Topic: <span className="text-accent">{topic}</span>
+              </span>
+              <button
+                onClick={() => setSearchParams({})}
+                aria-label="Clear topic filter"
+                className="inline-flex h-5 w-5 items-center justify-center text-mist transition-colors hover:text-accent"
+              >
+                <X className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
+            </div>
+          )}
 
           {query.isLoading && <SkeletonGrid count={6} />}
 

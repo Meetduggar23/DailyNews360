@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { Logo } from "@/components/common/Logo";
-import { NAV_BAR } from "@/constants";
 import { useAuthStore } from "@/stores/auth.store";
 
 const COMPANY_LINKS = [
@@ -22,6 +21,17 @@ const CATEGORY_LINKS = [
   { to: "/category/politics", label: "Politics" },
 ] as const;
 
+const PRODUCT_LINKS = [
+  { to: "/", label: "Home" },
+  { to: "/trending", label: "Trending" },
+  { to: "/search", label: "Search" },
+  { to: "/saved", label: "Saved" },
+  { to: "/for-you", label: "For You" },
+  { to: "/history", label: "Reading History" },
+  { to: "/sources", label: "Sources" },
+  { to: "/settings", label: "Settings" },
+] as const;
+
 export function Footer() {
   const user = useAuthStore((state) => state.user);
 
@@ -31,7 +41,7 @@ export function Footer() {
         {/* Brand row */}
         <div className="flex flex-col gap-6 border-b border-line pb-8 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-sm">
-            <Logo />
+            <Logo showTagline />
             <p className="mt-3 font-sans text-sm leading-relaxed text-secondary">
               Your World, Updated Daily. Real-time news from trusted sources —
               aggregated, verified and presented in one place.
@@ -40,12 +50,12 @@ export function Footer() {
 
           {/* Sections */}
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
-            <nav aria-label="Sections">
+            <nav aria-label="News sections">
               <h3 className="mb-3 font-sans text-xs font-bold uppercase tracking-widest text-mist">
-                Sections
+                News
               </h3>
               <ul className="space-y-2">
-                {NAV_BAR.slice(0, 5).map((link) => (
+                {CATEGORY_LINKS.map((link) => (
                   <li key={link.to}>
                     <Link
                       to={link.to}
@@ -57,12 +67,12 @@ export function Footer() {
                 ))}
               </ul>
             </nav>
-            <nav aria-label="More sections">
+            <nav aria-label="Product">
               <h3 className="mb-3 font-sans text-xs font-bold uppercase tracking-widest text-mist">
-                Explore
+                Product
               </h3>
               <ul className="space-y-2">
-                {CATEGORY_LINKS.slice(5).map((link) => (
+                {PRODUCT_LINKS.map((link) => (
                   <li key={link.to}>
                     <Link
                       to={link.to}
@@ -97,7 +107,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col items-center justify-between gap-4 pt-6 sm:flex-row">
           <p className="font-sans text-xs text-mist">
-            © 2026 DailyNews360. All rights reserved. News content remains the
+            © 2026 DAILY NEWS 360. All rights reserved. News content remains the
             property of its original publishers.
           </p>
           <div className="flex items-center gap-4 font-sans text-xs text-mist">

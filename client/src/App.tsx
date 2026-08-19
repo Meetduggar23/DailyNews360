@@ -11,6 +11,7 @@ import { ArticlePage } from "@/pages/ArticlePage";
 import { TrendingPage } from "@/pages/TrendingPage";
 import { ForYouPage } from "@/pages/ForYou";
 import { BookmarksPage } from "@/pages/Bookmarks";
+import { HistoryPage } from "@/pages/History";
 import { SourcesPage } from "@/pages/Sources";
 import { ProfilePage } from "@/pages/Profile";
 import { SettingsPage } from "@/pages/Settings";
@@ -52,6 +53,15 @@ function AppRoutes() {
           }
         />
         <Route path="/bookmarks" element={<BookmarksPage />} />
+        <Route path="/saved" element={<BookmarksPage />} />
+        <Route
+          path="/history"
+          element={
+            <ProtectedRoute>
+              <HistoryPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/profile"
           element={

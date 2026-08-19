@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
 import { Sparkles } from "lucide-react";
-import { useCategoryNews, useHomeData } from "@/hooks/useNews";
+import { useCategoryNews, useClusters, useHomeData, useMostRead } from "@/hooks/useNews";
 import { BreakingTicker } from "@/components/news/BreakingTicker";
 import { HeroSection } from "@/components/news/HeroSection";
 import { CategorySection } from "@/components/news/CategorySection";
-import { ArticleCard } from "@/components/news/ArticleCard";
+import { EditorialRow } from "@/components/news/EditorialRow";
+import { EveryStoryEveryAngle } from "@/components/news/EveryStoryEveryAngle";
+import { RefreshBar } from "@/components/news/RefreshBar";
+import { NewsletterSection } from "@/components/news/NewsletterSection";
 import { TrendingList } from "@/components/news/TrendingList";
 import { SectionTitle } from "@/components/common/SectionTitle";
 import { SkeletonHero } from "@/components/common/SkeletonStates";
@@ -12,6 +15,8 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/button";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { BRAND } from "@/constants";
+import { cn } from "@/lib/utils";
+import type { NewsArticle } from "@/types";
 
 function CategorySectionLoader({ category }: { category: string }) {
   const query = useCategoryNews(category, { pageSize: 4 });
@@ -45,7 +50,7 @@ function ScienceHealthSection() {
             <div className="grid gap-0 divide-y divide-line/70">
               {[...scienceArticles.slice(0, 1), ...healthArticles.slice(0, 1)].map((article) => (
                 <div key={article.id} className="py-3 first:pt-0">
-                  <ArticleCard article={article} variant="compact" />
+                  <ArticleCardInline article={article} />
                 </div>
               ))}
             </div>
@@ -61,7 +66,7 @@ function ScienceHealthSection() {
             <div className="grid gap-0 divide-y divide-line/70">
               {[...scienceArticles.slice(1, 2), ...healthArticles.slice(1, 2)].map((article) => (
                 <div key={article.id} className="py-3 first:pt-0">
-                  <ArticleCard article={article} variant="compact" />
+                  <ArticleCardInline article={article} />
                 </div>
               ))}
             </div>
@@ -72,15 +77,29 @@ function ScienceHealthSection() {
   );
 }
 
+/** Thin re-export so the Science/Health block keeps its compact rows. */
+function ArticleCardInline({ article }: { article: NewsArticle }) {
+  return <EditorialRow article={article} />;
+}
+
 export function HomePage() {
   usePageMeta({
     description:
       "DailyNews360 — Every Story. Every Angle. Real-time news from India, the world, technology, business and more.",
   });
   const { top, trending, main, secondary, latest } = useHomeData();
+  const clusters = useClusters(5);
+  const mostRead = useMostRead(6);
 
   const isLoading = top.isLoading;
   const hasError = top.isError;
+  const isRefreshing = top.isFetching;
+
+  function refreshAll() {
+    void top.refetch();
+    void clusters.refetch();
+    void mostRead.refetch();
+  }
 
   return (
     <div>
@@ -95,27 +114,44 @@ export function HomePage() {
 
         {!isLoading && !hasError && main && (
           <>
+            {/* Updated status + refresh */}
+            <RefreshBar
+              updatedAt={new Date(top.dataUpdatedAt ?? Date.now()).toISOString()}
+              onRefresh={refreshAll}
+              isRefreshing={isRefreshing}
+            />
+
             {/* Lead stories */}
             <HeroSection main={main} secondary={secondary} />
 
-            {/* Latest news - multi-column editorial grid */}
-            <section className="mt-12" aria-label="Latest news">
+            {/* Latest news - compact editorial rows */}
+            <section id="latest-news" className="mt-12 scroll-mt-24" aria-label="Latest news">
               <SectionTitle title="Latest News" />
-              <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-                {latest.slice(0, 9).map((article, index) => (
+              <div className="grid gap-x-10 md:grid-cols-2">
+                {[0, 1].map((column) => (
                   <div
-                    key={article.id}
-                    className={index % 3 === 0 ? "sm:col-span-2 lg:col-span-1" : ""}
+                    key={column}
+                    className={cn(
+                      "grid gap-0 divide-y divide-line/70",
+                      column === 0 && "md:border-r md:border-line md:pr-10",
+                      column === 1 && "md:pl-10",
+                    )}
                   >
-                    <ArticleCard
-                      article={article}
-                      variant={index % 3 === 0 ? "list" : "standard"}
-                      showImage={index % 3 === 0}
-                    />
+                    {latest.slice(column * 4, column * 4 + 4).map((article) => (
+                      <div key={article.id} className="py-4 first:pt-0">
+                        <EditorialRow article={article} showThumbnail />
+                      </div>
+                    ))}
                   </div>
                 ))}
               </div>
             </section>
+
+            {/* Every Story. Every Angle. - multi-source coverage */}
+            <EveryStoryEveryAngle
+              clusters={clusters.data?.clusters ?? []}
+              isLoading={clusters.isLoading}
+            />
 
             {/* Front-page category sections */}
             <CategorySectionLoader category="india" />
@@ -131,19 +167,57 @@ export function HomePage() {
               <SectionTitle title="Opinion" viewAllTo="/category/politics" />
               <div className="grid gap-8 lg:grid-cols-2">
                 <div className="lg:border-r lg:border-line lg:pr-8">
-                  {latest[0] ? <ArticleCard article={latest[0]} variant="featured" showImage /> : <p className="text-sm text-mist">No stories yet.</p>}
+                  {latest[0] ? (
+                    <EditorialRow article={latest[0]} />
+                  ) : (
+                    <p className="text-sm text-mist">No stories yet.</p>
+                  )}
                 </div>
                 <div className="grid gap-0 divide-y divide-line/70">
                   {latest.slice(1, 4).map((article) => (
                     <div key={article.id} className="py-3 first:pt-0">
-                      <ArticleCard article={article} variant="compact" />
+                      <EditorialRow article={article} />
                     </div>
                   ))}
                 </div>
               </div>
             </section>
 
-            {/* Trending */}
+            {/* Most Read - numbered editorial ranking */}
+            <section id="most-read" className="mt-12 scroll-mt-24" aria-label="Most read stories">
+              <SectionTitle title="Most Read" />
+              {mostRead.isLoading ? (
+                <div className="space-y-4">
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <div key={index} className="flex gap-4">
+                      <div className="skeleton h-8 w-8" />
+                      <div className="skeleton h-4 w-full" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid gap-x-10 md:grid-cols-2">
+                  {[0, 1].map((column) => (
+                    <div
+                      key={column}
+                      className={cn(
+                        "grid gap-0 divide-y divide-line/70",
+                        column === 0 && "md:border-r md:border-line md:pr-10",
+                        column === 1 && "md:pl-10",
+                      )}
+                    >
+                      {(mostRead.data?.articles ?? []).slice(column * 3, column * 3 + 3).map((article, index) => (
+                        <div key={article.id} className="py-3.5 first:pt-0">
+                          <EditorialRow article={article} rank={column * 3 + index + 1} />
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Trending + For You */}
             <div className="mt-12 grid gap-10 lg:grid-cols-3">
               <section className="lg:col-span-2" aria-label="Trending stories">
                 <SectionTitle title="Trending" viewAllTo="/trending" />
@@ -177,6 +251,9 @@ export function HomePage() {
                 </div>
               </aside>
             </div>
+
+            {/* Newsletter */}
+            <NewsletterSection />
           </>
         )}
 

@@ -57,6 +57,7 @@ export interface PagedNews {
 export interface ArticleDetail {
   article: NewsArticle;
   related: NewsArticle[];
+  coverage?: NewsArticle[];
 }
 
 export interface Source {
@@ -95,4 +96,17 @@ export interface LocalBookmark {
   sourceName: string;
   publishedAt: string | null;
   savedAt: string;
+}
+
+export interface StoryCluster {
+  id: string;
+  title: string;
+  description: string | null;
+  imageUrl: string | null;
+  category: string;
+  sourceName: string;
+  publishedAt: string;
+  articleCount: number;
+  sources: string[];
+  articles: NewsArticle[];
 }

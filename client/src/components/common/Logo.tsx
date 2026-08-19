@@ -6,30 +6,102 @@ interface LogoProps {
   className?: string;
   onClick?: () => void;
   showTagline?: boolean;
+  /** Wide masthead layout: logo far left, wordmark centered with large gap. */
+  wide?: boolean;
 }
 
 /**
- * Brand wordmark: DAILYNEWS360 set in a large Times Roman-style serif.
- * Used in the masthead and footer; works on light and dark backgrounds.
+ * Brand lockup:
+ *
+ * Default (compact):
+ *   [LOGO]  DAILY NEWS 360
+ *           Every Story. Every Angle.
+ *
+ * Wide (masthead):
+ *   [LOGO]                         DAILY NEWS 360
+ *                                  Every Story. Every Angle.
  */
-export function Logo({ className, onClick, showTagline = false }: LogoProps) {
+export function Logo({ className, onClick, showTagline = false, wide = false }: LogoProps) {
+  const wordmark = (
+    <span className="whitespace-nowrap font-times text-3xl font-bold uppercase leading-none tracking-[0.04em] text-ink sm:text-4xl md:text-5xl" style={{ wordSpacing: "0.12em" }}>
+      DAILY NEWS 360
+    </span>
+  );
+
+  if (wide) {
+    return (
+      <div
+        className={cn(
+          "grid w-full grid-cols-[auto_1fr_auto] items-center",
+          className,
+        )}
+      >
+        {/* Left: logo anchored to the far left */}
+        <Link
+          to="/"
+          onClick={onClick}
+          aria-label="DailyNews360 home"
+          className="justify-self-start transition-opacity hover:opacity-80"
+        >
+          <img
+            src="/logo360.png"
+            alt="DailyNews360 logo"
+            className="h-10 w-10 object-contain sm:h-12 sm:w-12 md:h-14 md:w-14"
+          />
+        </Link>
+
+        {/* Center: wordmark + tagline */}
+        <div className="flex flex-col items-start justify-self-center">
+          <Link
+            to="/"
+            onClick={onClick}
+            aria-label="DailyNews360 home"
+            className="transition-opacity hover:opacity-80"
+          >
+            {wordmark}
+          </Link>
+          {showTagline && (
+            <p className="mt-1 font-sans text-[10px] font-medium uppercase tracking-[0.2em] text-mist sm:text-[11px]">
+              {BRAND.tagline}
+            </p>
+          )}
+        </div>
+
+        {/* Right: empty column to push wordmark toward center */}
+        <div className="justify-self-end" />
+      </div>
+    );
+  }
+
   return (
-    <div className={cn("flex flex-col items-center", className)}>
+    <div className={cn("flex items-center justify-center gap-3 sm:gap-4", className)}>
       <Link
         to="/"
         onClick={onClick}
         aria-label="DailyNews360 home"
-        className="transition-opacity hover:opacity-80"
+        className="flex-shrink-0 transition-opacity hover:opacity-80"
       >
-        <span className="font-times text-4xl font-bold uppercase leading-none tracking-tight text-ink sm:text-5xl md:text-6xl">
-          DailyNews360
-        </span>
+        <img
+          src="/logo360.png"
+          alt="DailyNews360 logo"
+          className="h-10 w-10 object-contain sm:h-12 sm:w-12 md:h-14 md:w-14"
+        />
       </Link>
-      {showTagline && (
-        <p className="mt-2 font-sans text-[11px] font-medium uppercase tracking-[0.2em] text-mist">
-          {BRAND.tagline}
-        </p>
-      )}
+      <div className="flex flex-col items-start">
+        <Link
+          to="/"
+          onClick={onClick}
+          aria-label="DailyNews360 home"
+          className="transition-opacity hover:opacity-80"
+        >
+          {wordmark}
+        </Link>
+        {showTagline && (
+          <p className="mt-1 font-sans text-[10px] font-medium uppercase tracking-[0.2em] text-mist sm:text-[11px]">
+            {BRAND.tagline}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

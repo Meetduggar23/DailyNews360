@@ -34,7 +34,7 @@ function recencyScore(publishedAt: string | null): number {
   return Math.pow(0.5, ageMs / halfLifeMs);
 }
 
-function sourcePopularity(sourceName: string): number {
+export function sourcePopularity(sourceName: string): number {
   // Deterministic popularity from a stable hash of the source name.
   let hash = 0;
   for (let i = 0; i < sourceName.length; i++) {
@@ -124,4 +124,22 @@ export function sortArticles(articles: NewsArticle[], sort: SortOption = "latest
     return rankArticles(copy, {});
   }
   return copy; // relevance is applied by callers that have a query
+}
+
+/** Popularity-heavy ranking used by the "Most Read" editorial list. */
+export const MOST_READ_WEIGHTS: RankingWeights = {
+  recency: 0.15,
+  relevance: 0.2,
+  popularity: 0.5,
+  userInterest: 0.15,
+};
+
+export function rankByPopularity(
+  articles: NewsArticle[],
+  options: {
+    userCategories?: string[];
+    bookmarkedCategories?: string[];
+  } = {},
+): NewsArticle[] {
+  return rankArticles(articles, options, MOST_READ_WEIGHTS);
 }

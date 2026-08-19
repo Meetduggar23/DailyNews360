@@ -10,6 +10,12 @@ import { fail, ok } from "../utils/response.js";
 const pageSizeSchema = z.coerce.number().int().min(1).max(50).default(15);
 const pageSchema = z.coerce.number().int().min(1).max(200).default(1);
 
+/** Parses a numeric query param without throwing, so bad input never crashes the process. */
+function safeParse<T>(schema: z.ZodType<T, unknown, unknown>, value: unknown, fallback: T): T {
+  const parsed = schema.safeParse(value);
+  return parsed.success ? parsed.data : fallback;
+}
+
 async function userSignals(req: Request) {
   if (!req.user) return undefined;
   try {
@@ -26,7 +32,7 @@ async function userSignals(req: Request) {
 }
 
 export async function topNewsController(req: Request, res: Response): Promise<void> {
-  const pageSize = pageSizeSchema.parse(req.query["pageSize"] ?? 15);
+  const pageSize = safeParse(pageSizeSchema, req.query["pageSize"], 15);
   const q = req.query["q"] ? String(req.query["q"]) : undefined;
   const query = {
     pageSize,
@@ -48,8 +54,8 @@ export async function categoryNewsController(req: Request, res: Response): Promi
     fail(res, 400, "VALIDATION_ERROR", `Unknown category: ${category}`);
     return;
   }
-  const pageSize = pageSizeSchema.parse(req.query["pageSize"] ?? 15);
-  const page = pageSchema.parse(req.query["page"] ?? 1);
+  const pageSize = safeParse(pageSizeSchema, req.query["pageSize"], 15);
+  const page = safeParse(pageSchema, req.query["page"], 1);
   const sortRaw = req.query["sort"] ? String(req.query["sort"]) : "latest";
   const sort: SortOption = ["latest", "relevance", "popular"].includes(sortRaw)
     ? (sortRaw as SortOption)
@@ -121,6 +127,16 @@ export async function trendingController(req: Request, res: Response): Promise<v
   }
 }
 
+export async function mostReadController(req: Request, res: Response): Promise<void> {
+  const pageSize = pageSizeSchema.parse(req.query["pageSize"] ?? 6);
+  try {
+    const articles = await newsService.getMostRead({ pageSize }, await userSignals(req));
+    ok(res, { articles });
+  } catch {
+    fail(res, 502, "NEWS_PROVIDER_ERROR", "Unable to fetch most-read stories right now.");
+  }
+}
+
 export async function articleController(req: Request, res: Response): Promise<void> {
   const id = String(req.params["id"] ?? "");
   try {
@@ -139,13 +155,27 @@ export async function articleController(req: Request, res: Response): Promise<vo
       });
     }
 
-    const related = await newsService.getCategoryNews(article.category, { pageSize: 6 });
+    const [relatedResult, coverage] = await Promise.all([
+      newsService.getCategoryNews(article.category, { pageSize: 6 }),
+      newsService.getClusterForArticle(id),
+    ]);
     ok(res, {
       article,
-      related: related.articles.filter((a) => a.id !== article.id).slice(0, 4),
+      related: relatedResult.articles.filter((a) => a.id !== article.id).slice(0, 4),
+      coverage: coverage?.articles ?? [],
     });
   } catch {
     fail(res, 502, "NEWS_PROVIDER_ERROR", "Unable to fetch this story right now.");
+  }
+}
+
+export async function clustersController(req: Request, res: Response): Promise<void> {
+  const pageSize = pageSizeSchema.parse(req.query["pageSize"] ?? 5);
+  try {
+    const clusters = await newsService.getClusters({ pageSize }, await userSignals(req));
+    ok(res, { clusters });
+  } catch {
+    fail(res, 502, "NEWS_PROVIDER_ERROR", "Unable to build story clusters right now.");
   }
 }
 
