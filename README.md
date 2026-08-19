@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="client/public/logo360.png" alt="DailyNews360 logo" width="180" height="180" />
+  <img src="client/public/logo360.png" alt="DailyNews360 logo" width="140" height="150" />
 </p>
 
 <h1 align="center">DailyNews360</h1>
