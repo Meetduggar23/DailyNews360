@@ -25,7 +25,7 @@ interface LogoProps {
  */
 export function Logo({ className, onClick, showTagline = false, wide = false, rightSlot }: LogoProps) {
   const wordmark = (
-    <span className="whitespace-nowrap font-times text-3xl font-bold uppercase leading-none tracking-[0.04em] text-ink sm:text-4xl md:text-5xl" style={{ wordSpacing: "0.12em" }}>
+    <span className="whitespace-nowrap font-times text-xl font-bold uppercase leading-none tracking-[0.04em] text-ink sm:text-3xl md:text-5xl" style={{ wordSpacing: "0.12em" }}>
       DAILY NEWS360
     </span>
   );
@@ -53,7 +53,7 @@ export function Logo({ className, onClick, showTagline = false, wide = false, ri
         </Link>
 
         {/* Center: wordmark + tagline */}
-        <div className="flex flex-col items-start justify-self-center">
+        <div className="flex min-w-0 flex-col items-center justify-self-center">
           <Link
             to="/"
             onClick={onClick}

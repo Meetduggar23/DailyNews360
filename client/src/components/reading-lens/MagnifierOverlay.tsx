@@ -142,7 +142,7 @@ export function MagnifierOverlay({ active, onClose }: MagnifierOverlayProps) {
       "left:0",
       "margin:0",
       "padding:0",
-      "width:100vw",
+      "width:100%",
       `height:${document.documentElement.scrollHeight}px`,
       "overflow:visible",
       "pointer-events:none",

@@ -116,7 +116,7 @@ export function SettingsPage() {
         <p className="font-sans text-xs font-bold uppercase tracking-widest text-accent">
           DailyNews360 — Account
         </p>
-        <h1 className="mt-2 font-serif text-4xl font-bold uppercase tracking-wide text-ink">
+        <h1 className="mt-2 font-serif text-3xl font-bold uppercase tracking-wide text-ink md:text-5xl">
           Settings
         </h1>
       </header>

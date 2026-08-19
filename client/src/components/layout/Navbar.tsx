@@ -183,7 +183,7 @@ export function Navbar() {
               <Link
                 to="/"
                 aria-label="DailyNews360 home"
-                className="whitespace-nowrap font-times text-xl font-bold uppercase tracking-[0.04em] text-ink"
+                className="whitespace-nowrap font-times text-base font-bold uppercase tracking-[0.04em] text-ink sm:text-lg"
                 style={{ wordSpacing: "0.12em" }}
               >
                 DAILY NEWS360

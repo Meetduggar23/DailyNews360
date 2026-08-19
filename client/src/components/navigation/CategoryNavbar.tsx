@@ -14,7 +14,7 @@ export function CategoryNavbar() {
       aria-label="Category navigation"
       className="category-navbar border-b border-line bg-paper"
     >
-      <div className="mx-auto flex w-full justify-center">
+      <div className="flex w-full justify-center overflow-x-auto">
         <ul className="flex items-center gap-x-5 whitespace-nowrap px-4 py-2.5 sm:gap-x-6 md:gap-x-7">
           {CATEGORY_NAV_ITEMS.map((item) => {
             const isActive =

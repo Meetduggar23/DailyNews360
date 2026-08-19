@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -10,7 +10,7 @@ interface MenuButtonProps {
 }
 
 /**
- * Hamburger toggle that morphs between ☰ and × with a smooth rotation.
+ * Hamburger toggle: 3 horizontal lines when closed, 3 vertical lines when open.
  * Keyboard accessible with a visible focus ring.
  */
 export const MenuButton = React.forwardRef<HTMLButtonElement, MenuButtonProps>(
@@ -29,20 +29,33 @@ export const MenuButton = React.forwardRef<HTMLButtonElement, MenuButtonProps>(
         )}
       >
         <AnimatePresence mode="wait" initial={false}>
-          <motion.span
-            key={open ? "close" : "menu"}
-            initial={{ rotate: open ? -90 : 90, opacity: 0 }}
-            animate={{ rotate: 0, opacity: 1 }}
-            exit={{ rotate: open ? 90 : -90, opacity: 0 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            className="flex items-center justify-center"
-          >
-            {open ? (
-              <X className="h-5 w-5" aria-hidden="true" />
-            ) : (
-              <Menu className="h-5 w-5" aria-hidden="true" />
-            )}
-          </motion.span>
+          {open ? (
+            <motion.span
+              key="close"
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+              className="flex items-center gap-[3px]"
+              aria-hidden="true"
+            >
+              <span className="h-4 w-[1.5px] rounded-full bg-current" />
+              <span className="h-4 w-[1.5px] rounded-full bg-current" />
+              <span className="h-4 w-[1.5px] rounded-full bg-current" />
+            </motion.span>
+          ) : (
+            <motion.span
+              key="menu"
+              initial={{ rotate: 90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: -90, opacity: 0 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+              className="flex items-center justify-center"
+              aria-hidden="true"
+            >
+              <Menu className="h-5 w-5" />
+            </motion.span>
+          )}
         </AnimatePresence>
       </button>
     );

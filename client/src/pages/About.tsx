@@ -15,7 +15,7 @@ export function AboutPage() {
         <p className="font-sans text-xs font-bold uppercase tracking-widest text-accent">
           DailyNews360 — About
         </p>
-        <h1 className="mt-2 font-serif text-4xl font-bold uppercase tracking-wide text-ink">
+        <h1 className="mt-2 font-serif text-3xl font-bold uppercase tracking-wide text-ink md:text-5xl">
           About DailyNews360
         </h1>
         <p className="mt-3 font-serif text-lg italic text-secondary">{BRAND.tagline}</p>

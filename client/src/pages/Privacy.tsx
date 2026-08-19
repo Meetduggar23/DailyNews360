@@ -11,7 +11,7 @@ export function PrivacyPage() {
         <p className="font-sans text-xs font-bold uppercase tracking-widest text-accent">
           DailyNews360 — Policy
         </p>
-        <h1 className="mt-2 font-serif text-4xl font-bold uppercase tracking-wide text-ink">
+        <h1 className="mt-2 font-serif text-3xl font-bold uppercase tracking-wide text-ink md:text-5xl">
           Privacy Policy
         </h1>
         <p className="mt-3 font-sans text-sm text-mist">Last updated: August 2026</p>

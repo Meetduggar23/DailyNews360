@@ -149,52 +149,61 @@ export function SearchPage() {
       </div>
 
       {/* Category / source / date filters */}
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <select
-          value={category}
-          onChange={(e) => setParam("category", e.target.value)}
-          aria-label="Filter by category"
-          className="h-9 border border-line bg-surface px-3 text-sm text-ink"
-        >
-          <option value="">All categories</option>
-          {CATEGORIES.map((c) => (
-            <option key={c.slug} value={c.slug}>
-              {c.label}
-            </option>
-          ))}
-        </select>
+      <div className="mt-6 flex flex-col gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <select
+            value={category}
+            onChange={(e) => setParam("category", e.target.value)}
+            aria-label="Filter by category"
+            className="h-9 flex-1 min-w-[140px] border border-line bg-surface px-3 text-sm text-ink sm:flex-none"
+          >
+            <option value="">All categories</option>
+            {CATEGORIES.map((c) => (
+              <option key={c.slug} value={c.slug}>
+                {c.label}
+              </option>
+            ))}
+          </select>
 
-        <Input
-          value={source}
-          onChange={(e) => setParam("source", e.target.value)}
-          placeholder="Source"
-          aria-label="Filter by source"
-          className="h-9 w-32"
-        />
+          <Input
+            value={source}
+            onChange={(e) => setParam("source", e.target.value)}
+            placeholder="Source"
+            aria-label="Filter by source"
+            className="h-9 w-full sm:w-32 sm:flex-none"
+          />
 
-        <Input
-          type="date"
-          value={from}
-          onChange={(e) => setParam("from", e.target.value)}
-          aria-label="From date"
-          className="h-9 w-40"
-        />
-        <Input
-          type="date"
-          value={to}
-          onChange={(e) => setParam("to", e.target.value)}
-          aria-label="To date"
-          className="h-9 w-40"
-        />
+          <Input
+            type="date"
+            value={from}
+            onChange={(e) => setParam("from", e.target.value)}
+            aria-label="From date"
+            className="h-9 w-full min-w-[120px] sm:w-40 sm:flex-none"
+          />
+          <Input
+            type="date"
+            value={to}
+            onChange={(e) => setParam("to", e.target.value)}
+            aria-label="To date"
+            className="h-9 w-full min-w-[120px] sm:w-40 sm:flex-none"
+          />
 
-        <div className="flex items-center gap-4 border-b border-line" role="group" aria-label="Sort">
+          {hasActiveFilters && (
+            <Button variant="ghost" size="sm" onClick={clearAll}>
+              <X className="h-4 w-4" aria-hidden="true" />
+              Clear filters
+            </Button>
+          )}
+        </div>
+
+        <div className="flex items-center gap-4 overflow-x-auto border-b border-line" role="group" aria-label="Sort">
           {SORT_OPTIONS.filter((s) => s.value !== "latest").map((option) => (
             <button
               key={option.value}
               onClick={() => setParam("sort", option.value)}
               aria-pressed={sort === option.value}
               className={cn(
-                "-mb-px border-b-2 py-2 text-xs font-semibold uppercase tracking-wide transition-colors",
+                "-mb-px shrink-0 border-b-2 py-2 text-xs font-semibold uppercase tracking-wide transition-colors",
                 sort === option.value
                   ? "border-accent text-ink"
                   : "border-transparent text-mist hover:text-ink",
@@ -204,13 +213,6 @@ export function SearchPage() {
             </button>
           ))}
         </div>
-
-        {hasActiveFilters && (
-          <Button variant="ghost" size="sm" onClick={clearAll}>
-            <X className="h-4 w-4" aria-hidden="true" />
-            Clear filters
-          </Button>
-        )}
       </div>
 
       {/* Results */}

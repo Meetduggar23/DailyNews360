@@ -40,7 +40,7 @@ export function Layout() {
     init();
   }, [init]);
 
-  // Scroll to top on route change; to hash targets when one is present.
+  // Scroll to top on mount (refresh/initial load) and on route change.
   React.useEffect(() => {
     if (location.hash) {
       const id = location.hash.slice(1);
@@ -50,7 +50,20 @@ export function Layout() {
         return;
       }
     }
-    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Scroll to top on route change.
+  React.useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.slice(1);
+      const target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+    }
+    window.scrollTo({ top: 0, behavior: "instant" });
   }, [location.pathname, location.hash]);
 
   return (

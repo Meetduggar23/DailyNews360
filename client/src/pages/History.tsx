@@ -36,7 +36,7 @@ export function HistoryPage() {
         <div className="flex items-center gap-3">
           <Clock className="h-6 w-6 text-accent" aria-hidden="true" />
           <div>
-            <h1 className="font-serif text-4xl font-bold uppercase tracking-wide text-ink">
+            <h1 className="font-serif text-3xl font-bold uppercase tracking-wide text-ink md:text-5xl">
               Reading History
             </h1>
             <p className="mt-1 font-serif text-base italic text-secondary">
