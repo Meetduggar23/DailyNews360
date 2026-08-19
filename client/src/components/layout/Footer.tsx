@@ -3,32 +3,33 @@ import { Heart } from "lucide-react";
 import { Logo } from "@/components/common/Logo";
 import { useAuthStore } from "@/stores/auth.store";
 
-const COMPANY_LINKS = [
-  { to: "/about", label: "About" },
-  { to: "/privacy", label: "Privacy Policy" },
-  { to: "/terms", label: "Terms of Service" },
-] as const;
-
-const CATEGORY_LINKS = [
+const NEWS_LINKS = [
+  { to: "/", label: "Home" },
   { to: "/category/india", label: "India" },
   { to: "/category/world", label: "World" },
+  { to: "/category/politics", label: "Politics" },
   { to: "/category/business", label: "Business" },
   { to: "/category/technology", label: "Technology" },
   { to: "/category/sports", label: "Sports" },
   { to: "/category/entertainment", label: "Entertainment" },
   { to: "/category/science", label: "Science" },
   { to: "/category/health", label: "Health" },
-  { to: "/category/politics", label: "Politics" },
 ] as const;
 
-const PRODUCT_LINKS = [
-  { to: "/", label: "Home" },
+const EXPLORE_LINKS = [
+  { to: "/category/top", label: "Top Stories" },
   { to: "/trending", label: "Trending" },
-  { to: "/search", label: "Search" },
-  { to: "/saved", label: "Saved" },
   { to: "/for-you", label: "For You" },
+  { to: "/saved", label: "Saved" },
   { to: "/history", label: "Reading History" },
   { to: "/sources", label: "Sources" },
+  { to: "/search", label: "Search" },
+] as const;
+
+const COMPANY_LINKS = [
+  { to: "/about", label: "About" },
+  { to: "/privacy", label: "Privacy" },
+  { to: "/terms", label: "Terms" },
   { to: "/settings", label: "Settings" },
 ] as const;
 
@@ -55,7 +56,7 @@ export function Footer() {
                 News
               </h3>
               <ul className="space-y-2">
-                {CATEGORY_LINKS.map((link) => (
+                {NEWS_LINKS.map((link) => (
                   <li key={link.to}>
                     <Link
                       to={link.to}
@@ -67,12 +68,12 @@ export function Footer() {
                 ))}
               </ul>
             </nav>
-            <nav aria-label="Product">
+            <nav aria-label="Explore">
               <h3 className="mb-3 font-sans text-xs font-bold uppercase tracking-widest text-mist">
-                Product
+                Explore
               </h3>
               <ul className="space-y-2">
-                {PRODUCT_LINKS.map((link) => (
+                {EXPLORE_LINKS.map((link) => (
                   <li key={link.to}>
                     <Link
                       to={link.to}
