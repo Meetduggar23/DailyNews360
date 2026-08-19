@@ -167,12 +167,8 @@ export function Navbar() {
               >
                 <Menu className="h-5 w-5" aria-hidden="true" />
               </button>
-              <Link to="/" aria-label="DailyNews360 home">
-                <img
-                  src="/logo360.png"
-                  alt="DailyNews360"
-                  className="h-9 w-auto"
-                />
+              <Link to="/" aria-label="DailyNews360 home" className="font-times text-2xl font-bold uppercase tracking-tight text-ink">
+                DailyNews360
               </Link>
               <div className="flex items-center gap-1">
                 <button
@@ -257,7 +253,14 @@ export function Navbar() {
             className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-surface"
           >
             <div className="flex items-center justify-between border-b border-line px-4 py-3">
-              <img src="/logo360.png" alt="DailyNews360" className="h-10 w-auto" />
+              <Link
+                to="/"
+                onClick={() => setMobileOpen(false)}
+                aria-label="DailyNews360 home"
+                className="font-times text-2xl font-bold uppercase tracking-tight text-ink"
+              >
+                DailyNews360
+              </Link>
               <button
                 onClick={() => setMobileOpen(false)}
                 aria-label="Close menu"

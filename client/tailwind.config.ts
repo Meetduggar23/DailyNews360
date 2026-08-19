@@ -33,6 +33,7 @@ export default {
         sans: ["Source Sans 3", "Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
         serif: ["Source Serif 4", "Georgia", "Cambria", "Times New Roman", "serif"],
         display: ["Playfair Display", "Georgia", "Times New Roman", "serif"],
+        times: ["Times New Roman", "Times", "serif"],
       },
       boxShadow: {
         card: "0 1px 2px rgba(0,0,0,0.05)",
