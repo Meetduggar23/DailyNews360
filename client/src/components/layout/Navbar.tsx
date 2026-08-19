@@ -17,7 +17,8 @@ import { MenuButton } from "@/components/navigation/MenuButton";
 import { SideMenu } from "@/components/navigation/SideMenu";
 import { CategoryNavbar } from "@/components/navigation/CategoryNavbar";
 import { ReadingLens } from "@/components/reading-lens/ReadingLens";
-import { ScanSearch } from "lucide-react";
+import { LOCAL_STORAGE_KEYS } from "@/constants";
+import { ScanSearch, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -117,6 +118,37 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [lensActive, setLensActive] = React.useState(false);
+  const [hintVisible, setHintVisible] = React.useState(false);
+  const hintTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Show first-use magnifier hint once per browser
+  React.useEffect(() => {
+    const dismissed = localStorage.getItem(LOCAL_STORAGE_KEYS.magnifierHintDismissed);
+    if (!dismissed) {
+      // Small delay so the masthead renders first
+      const t = setTimeout(() => setHintVisible(true), 600);
+      return () => clearTimeout(t);
+    }
+  }, []);
+
+  // Auto-dismiss hint after ~7 seconds
+  React.useEffect(() => {
+    if (!hintVisible) return;
+    hintTimerRef.current = setTimeout(() => setHintVisible(false), 7000);
+    return () => {
+      if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    }
+  }, [hintVisible]);
+
+  function dismissHint() {
+    setHintVisible(false);
+    localStorage.setItem(LOCAL_STORAGE_KEYS.magnifierHintDismissed, "true");
+  }
+
+  function toggleLens() {
+    setLensActive((prev) => !prev);
+    if (hintVisible) dismissHint();
+  }
 
   React.useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -132,11 +164,12 @@ export function Navbar() {
       if (event.key.toLowerCase() === "m" && !isTyping) {
         event.preventDefault();
         setLensActive((prev) => !prev);
+        if (hintVisible) dismissHint();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [hintVisible]);
 
   return (
     <>
@@ -202,18 +235,51 @@ export function Navbar() {
             <Logo
               wide
               rightSlot={
-                <button
-                  onClick={() => setLensActive((prev) => !prev)}
-                  aria-label={lensActive ? "Close reading magnifier" : "Open reading magnifier"}
-                  aria-pressed={lensActive}
-                  className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 hover:scale-105 ${
-                    lensActive
-                      ? "border-accent bg-accent text-white shadow-lg"
-                      : "border-line bg-surface text-ink shadow-sm hover:border-accent hover:text-accent"
-                  }`}
-                >
-                  <ScanSearch className="h-[18px] w-[18px]" aria-hidden="true" />
-                </button>
+                <div className="relative">
+                  <button
+                    onClick={toggleLens}
+                    aria-label={lensActive ? "Close reading magnifier" : "Open reading magnifier"}
+                    aria-pressed={lensActive}
+                    className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 hover:scale-105 ${
+                      lensActive
+                        ? "border-accent bg-accent text-white shadow-lg"
+                        : "border-line bg-surface text-ink shadow-sm hover:border-accent hover:text-accent"
+                    }`}
+                  >
+                    <ScanSearch className="h-[18px] w-[18px]" aria-hidden="true" />
+                  </button>
+
+                  {/* First-use magnifier hint tooltip */}
+                  {hintVisible && !lensActive && (
+                    <div
+                      role="tooltip"
+                      className="absolute right-0 top-full z-[60] mt-3 w-[260px] animate-in fade-in slide-in-from-top-1 rounded-lg border border-line bg-surface px-4 py-3 shadow-lg"
+                      style={{ animationDuration: "180ms" }}
+                    >
+                      {/* Arrow pointing up to the button */}
+                      <div className="absolute -top-1.5 right-3 h-3 w-3 rotate-45 border-l border-t border-line bg-surface" />
+
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="font-serif text-sm font-bold text-ink">
+                          Read with Magnifier
+                        </h3>
+                        <button
+                          onClick={dismissHint}
+                          aria-label="Dismiss magnifier tip"
+                          className="mt-0.5 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded text-mist transition-colors hover:text-ink"
+                        >
+                          <X className="h-3.5 w-3.5" aria-hidden="true" />
+                        </button>
+                      </div>
+                      <p className="mt-1.5 font-sans text-xs leading-relaxed text-secondary">
+                        Move the magnifying glass over any news to zoom in and read it more clearly.
+                      </p>
+                      <p className="mt-2 font-sans text-[11px] text-mist">
+                        Click <span className="font-medium text-ink">&#128269;</span> to start
+                      </p>
+                    </div>
+                  )}
+                </div>
               }
             />
           </div>

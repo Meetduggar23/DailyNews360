@@ -80,4 +80,5 @@ export const LOCAL_STORAGE_KEYS = {
   bookmarks: "dn360:bookmarks",
   recentSearches: "dn360:recentSearches",
   mergedBookmarks: "dn360:mergedBookmarks",
+  magnifierHintDismissed: "dn360:magnifierHintDismissed",
 } as const;

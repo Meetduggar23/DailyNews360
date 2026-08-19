@@ -24,6 +24,32 @@
 ---
 
 
+## 🔍 Realistic Magnifying Glass UI
+
+DailyNews360 features a premium, realistic physical magnifying-glass interface designed to visually resemble a real optical magnifying glass.
+
+The glass UI includes:
+
+- Realistic transparent optical lens
+- Detailed metallic outer rim with conic-gradient brushed-metal finish
+- Inner glass rim and bevel for metal-to-glass transition
+- Subtle glass reflections and highlights via radial gradients
+- Realistic depth with multi-layer shadows
+- Premium dark-walnut cylindrical handle
+- Natural metal ferrule connector between lens and handle
+- Responsive proportions across desktop, tablet, and mobile
+- Minimal editorial styling matching the DailyNews360 newspaper aesthetic
+
+The design aims to feel like a:
+
+> **Real premium optical magnifying glass**
+
+rather than a simple circular digital overlay.
+
+
+---
+
+
 ## Screenshots
 
 _Coming soon — add screenshots of the homepage, article page, dark mode and mobile layout here._
