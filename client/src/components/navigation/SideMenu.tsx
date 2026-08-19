@@ -18,7 +18,6 @@ import {
 import { useAuthStore } from "@/stores/auth.store";
 import { useToast } from "@/components/ui/toaster";
 import { BRAND } from "@/constants";
-import { Logo } from "@/components/common/Logo";
 
 interface SideMenuProps {
   open: boolean;
@@ -139,7 +138,14 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
           >
             {/* Header */}
             <div className="flex items-start justify-between gap-4 border-b-2 border-ink px-6 py-5 dark:border-ink/80">
-              <Logo showTagline />
+              <div>
+                <p className="whitespace-nowrap font-times text-3xl font-bold uppercase leading-none tracking-[0.04em] text-ink" style={{ wordSpacing: "0.12em" }}>
+                  DAILY NEWS360
+                </p>
+                <p className="mt-1.5 font-sans text-[10px] font-medium uppercase tracking-[0.2em] text-mist">
+                  {BRAND.tagline}
+                </p>
+              </div>
               <MenuButton ref={closeRef} open onClick={onClose} className="mt-1" />
             </div>
 
