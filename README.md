@@ -2,7 +2,7 @@
   <img src="client/public/logo360.png" alt="DailyNews360 logo" width="140" height="150" />
 </p>
 
-<h1 align="center">Daily News360</h1>
+<h1 align="center">DailyNews360</h1>
 
 <p align="center"><em>Every Story. Every Angle.</em></p>
 
