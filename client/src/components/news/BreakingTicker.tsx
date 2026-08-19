@@ -14,9 +14,12 @@ export function BreakingTicker({ articles }: { articles: NewsArticle[] }) {
   return (
     <div className="flex items-stretch overflow-hidden border-b border-line bg-surface">
       <div className="flex shrink-0 items-center gap-2 border-r border-line px-4 py-2">
-        <span className="h-2 w-2 animate-pulse rounded-full bg-accent" aria-hidden="true" />
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+        </span>
         <span className="font-sans text-xs font-bold uppercase tracking-widest text-accent">
-          Breaking
+          Live
         </span>
       </div>
       <div className="group/ticker relative flex-1 overflow-hidden">

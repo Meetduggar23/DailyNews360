@@ -8,6 +8,7 @@ import { EditorialRow } from "@/components/news/EditorialRow";
 import { EveryStoryEveryAngle } from "@/components/news/EveryStoryEveryAngle";
 import { RefreshBar } from "@/components/news/RefreshBar";
 import { NewsletterSection } from "@/components/news/NewsletterSection";
+import { RegionalNews } from "@/components/news/RegionalNews";
 import { TrendingList } from "@/components/news/TrendingList";
 import { SectionTitle } from "@/components/common/SectionTitle";
 import { SkeletonHero } from "@/components/common/SkeletonStates";
@@ -105,7 +106,7 @@ export function HomePage() {
     <div>
       <BreakingTicker articles={top.data?.articles ?? []} />
 
-      <div className="container-news py-8">
+      <div className="container-news pb-8">
         {isLoading && <SkeletonHero />}
 
         {!isLoading && hasError && (
@@ -161,6 +162,9 @@ export function HomePage() {
             <CategorySectionLoader category="sports" />
             <CategorySectionLoader category="entertainment" />
             <ScienceHealthSection />
+
+            {/* Regional / Local News */}
+            <RegionalNews />
 
             {/* Opinion - clearly labeled */}
             <section className="mt-12" aria-label="Opinion">

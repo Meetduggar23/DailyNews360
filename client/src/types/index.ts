@@ -13,6 +13,7 @@ export interface NewsArticle {
   country: string | null;
   language: string | null;
   provider: string;
+  tags?: string[];
 }
 
 export interface Bookmark {

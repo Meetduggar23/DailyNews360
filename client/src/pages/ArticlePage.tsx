@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowUpRight, Clock, ExternalLink, PenLine } from "lucide-react";
+import { ArrowUpRight, Clock, ExternalLink, PenLine, Tag } from "lucide-react";
 import { useArticle } from "@/hooks/useNews";
 import { useAuthStore } from "@/stores/auth.store";
 import { api } from "@/services/api";
@@ -8,6 +8,7 @@ import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { ReadProgress } from "@/components/common/ReadProgress";
 import { ShareButton } from "@/components/common/ShareButton";
 import { BookmarkButton } from "@/components/common/BookmarkButton";
+import { TextToSpeech } from "@/components/news/TextToSpeech";
 import { ArticleCard } from "@/components/news/ArticleCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/button";
@@ -141,10 +142,26 @@ export function ArticlePage() {
               </span>
             </div>
             <div className="flex items-center gap-2">
+              <TextToSpeech text={article.content ?? article.description ?? article.title} />
               <BookmarkButton article={article} variant="full" />
               <ShareButton title={article.title} url={window.location.href} variant="full" />
             </div>
           </div>
+
+          {/* Article tags */}
+          {article.tags && article.tags.length > 0 && (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <Tag className="h-3.5 w-3.5 text-mist" aria-hidden="true" />
+              {article.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center rounded-full border border-line bg-surface px-2.5 py-0.5 font-sans text-[11px] font-medium uppercase tracking-wide text-secondary"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </header>
 
         {/* Hero image */}
