@@ -220,7 +220,7 @@ export function Navbar() {
         )}
       >
         <div className="container-news">
-          <div className="flex items-center gap-5 overflow-x-auto py-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex items-center justify-center gap-5 overflow-x-auto py-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {NAV_BAR.map((link) => (
               <NavLink
                 key={link.to}
