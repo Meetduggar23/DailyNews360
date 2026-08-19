@@ -14,17 +14,17 @@ interface LogoProps {
  * Brand lockup:
  *
  * Default (compact):
- *   [LOGO]  DAILY NEWS 360
+ *   [LOGO]  DAILY NEWS360
  *           Every Story. Every Angle.
  *
  * Wide (masthead):
- *   [LOGO]                         DAILY NEWS 360
+ *   [LOGO]                         DAILY NEWS360
  *                                  Every Story. Every Angle.
  */
 export function Logo({ className, onClick, showTagline = false, wide = false }: LogoProps) {
   const wordmark = (
     <span className="whitespace-nowrap font-times text-3xl font-bold uppercase leading-none tracking-[0.04em] text-ink sm:text-4xl md:text-5xl" style={{ wordSpacing: "0.12em" }}>
-      DAILY NEWS 360
+      DAILY NEWS360
     </span>
   );
 

@@ -145,7 +145,7 @@ export function Navbar() {
                 className="whitespace-nowrap font-times text-xl font-bold uppercase tracking-[0.04em] text-ink"
                 style={{ wordSpacing: "0.12em" }}
               >
-                DAILY NEWS 360
+                DAILY NEWS360
               </Link>
               <div className="flex items-center gap-1">
                 <button

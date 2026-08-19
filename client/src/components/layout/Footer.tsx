@@ -107,7 +107,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col items-center justify-between gap-4 pt-6 sm:flex-row">
           <p className="font-sans text-xs text-mist">
-            © 2026 DAILY NEWS 360. All rights reserved. News content remains the
+            © 2026 DAILY NEWS360. All rights reserved. News content remains the
             property of its original publishers.
           </p>
           <div className="flex items-center gap-4 font-sans text-xs text-mist">
