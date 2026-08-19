@@ -5,7 +5,6 @@ import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { MobileNav } from "./MobileNav";
 import { BackToTop } from "@/components/common/BackToTop";
-import { ReadingLens } from "@/components/reading-lens/ReadingLens";
 import { useThemeStore } from "@/stores/theme.store";
 
 function OfflineBanner() {
@@ -73,7 +72,6 @@ export function Layout() {
       <Footer />
       <MobileNav />
       <BackToTop />
-      <ReadingLens />
     </div>
   );
 }

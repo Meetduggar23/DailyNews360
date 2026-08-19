@@ -1,55 +1,32 @@
 import React from "react";
-import { ScanSearch } from "lucide-react";
+import { X } from "lucide-react";
 import { MagnifierOverlay } from "./MagnifierOverlay";
 
+interface ReadingLensProps {
+  active: boolean;
+  onClose: () => void;
+}
+
 /**
- * Reading Lens — real interactive magnifying glass for DailyNews360.
- * Click the button or press M to toggle the magnifier on/off.
+ * Reading Lens — renders the magnifier overlay and a mobile close button.
+ * The trigger button lives in the masthead (Navbar).
  */
-export function ReadingLens() {
-  const [active, setActive] = React.useState(false);
-
-  React.useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      const isTyping =
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.isContentEditable;
-      if (isTyping) return;
-
-      if (e.key.toLowerCase() === "m") {
-        e.preventDefault();
-        setActive((prev) => !prev);
-      }
-    };
-
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  function toggle() {
-    setActive((prev) => !prev);
-  }
-
+export function ReadingLens({ active, onClose }: ReadingLensProps) {
   return (
     <>
-      {/* Floating toggle button */}
-      <button
-        onClick={toggle}
-        aria-label={active ? "Close reading magnifier" : "Open reading magnifier"}
-        aria-pressed={active}
-        className={`fixed bottom-[100px] right-5 z-50 flex h-12 w-12 items-center justify-center rounded-full border transition-all duration-200 hover:scale-105 sm:h-[48px] sm:w-[48px] ${
-          active
-            ? "border-accent bg-accent text-white shadow-lg"
-            : "border-line bg-surface text-ink shadow-md hover:border-accent hover:text-accent dark:border-line dark:bg-surface dark:text-ink"
-        }`}
-      >
-        <ScanSearch className="h-5 w-5" aria-hidden="true" />
-      </button>
+      {/* Mobile close button — only visible when magnifier is active */}
+      {active && (
+        <button
+          onClick={onClose}
+          aria-label="Close magnifying glass"
+          className="fixed right-5 top-5 z-[10002] flex h-[44px] w-[44px] items-center justify-center rounded-full border border-line bg-surface text-ink shadow-lg transition-all duration-200 hover:scale-105 sm:hidden"
+        >
+          <X className="h-5 w-5" aria-hidden="true" />
+        </button>
+      )}
 
       {/* Magnifier overlay */}
-      <MagnifierOverlay active={active} onClose={() => setActive(false)} />
+      <MagnifierOverlay active={active} onClose={onClose} />
     </>
   );
 }

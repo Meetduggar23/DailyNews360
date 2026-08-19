@@ -16,6 +16,8 @@ import { Avatar } from "@/components/ui/avatar";
 import { MenuButton } from "@/components/navigation/MenuButton";
 import { SideMenu } from "@/components/navigation/SideMenu";
 import { CategoryNavbar } from "@/components/navigation/CategoryNavbar";
+import { ReadingLens } from "@/components/reading-lens/ReadingLens";
+import { ScanSearch } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -114,6 +116,7 @@ function todayLine(): string {
 export function Navbar() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [searchOpen, setSearchOpen] = React.useState(false);
+  const [lensActive, setLensActive] = React.useState(false);
 
   React.useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -125,6 +128,10 @@ export function Navbar() {
       if (event.key === "/" && !isTyping) {
         event.preventDefault();
         setSearchOpen(true);
+      }
+      if (event.key.toLowerCase() === "m" && !isTyping) {
+        event.preventDefault();
+        setLensActive((prev) => !prev);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -192,7 +199,23 @@ export function Navbar() {
 
           {/* Masthead brand */}
           <div className="border-y border-line py-5 md:py-6">
-            <Logo wide />
+            <Logo
+              wide
+              rightSlot={
+                <button
+                  onClick={() => setLensActive((prev) => !prev)}
+                  aria-label={lensActive ? "Close reading magnifier" : "Open reading magnifier"}
+                  aria-pressed={lensActive}
+                  className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 hover:scale-105 ${
+                    lensActive
+                      ? "border-accent bg-accent text-white shadow-lg"
+                      : "border-line bg-surface text-ink shadow-sm hover:border-accent hover:text-accent"
+                  }`}
+                >
+                  <ScanSearch className="h-[18px] w-[18px]" aria-hidden="true" />
+                </button>
+              }
+            />
           </div>
         </div>
       </header>
@@ -202,6 +225,9 @@ export function Navbar() {
       <SideMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
 
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+
+      {/* Reading Lens overlay */}
+      <ReadingLens active={lensActive} onClose={() => setLensActive(false)} />
 
       {/* Hidden affordance: skip link for keyboard users to open the menu. */}
       <button

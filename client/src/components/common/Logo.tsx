@@ -8,6 +8,8 @@ interface LogoProps {
   showTagline?: boolean;
   /** Wide masthead layout: logo far left, wordmark centered with large gap. */
   wide?: boolean;
+  /** Content rendered in the right column of the wide masthead layout. */
+  rightSlot?: React.ReactNode;
 }
 
 /**
@@ -21,7 +23,7 @@ interface LogoProps {
  *   [LOGO]                         DAILY NEWS360
  *                                  Every Story. Every Angle.
  */
-export function Logo({ className, onClick, showTagline = false, wide = false }: LogoProps) {
+export function Logo({ className, onClick, showTagline = false, wide = false, rightSlot }: LogoProps) {
   const wordmark = (
     <span className="whitespace-nowrap font-times text-3xl font-bold uppercase leading-none tracking-[0.04em] text-ink sm:text-4xl md:text-5xl" style={{ wordSpacing: "0.12em" }}>
       DAILY NEWS360
@@ -67,8 +69,10 @@ export function Logo({ className, onClick, showTagline = false, wide = false }: 
           )}
         </div>
 
-        {/* Right: empty column to push wordmark toward center */}
-        <div className="justify-self-end" />
+        {/* Right: optional slot to push wordmark toward center */}
+        <div className="justify-self-end">
+          {rightSlot}
+        </div>
       </div>
     );
   }

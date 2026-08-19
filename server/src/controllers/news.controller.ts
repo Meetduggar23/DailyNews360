@@ -11,7 +11,7 @@ const pageSizeSchema = z.coerce.number().int().min(1).max(50).default(15);
 const pageSchema = z.coerce.number().int().min(1).max(200).default(1);
 
 /** Parses a numeric query param without throwing, so bad input never crashes the process. */
-function safeParse<T>(schema: z.ZodType<T, unknown, unknown>, value: unknown, fallback: T): T {
+function safeParse<T>(schema: z.ZodType<T>, value: unknown, fallback: T): T {
   const parsed = schema.safeParse(value);
   return parsed.success ? parsed.data : fallback;
 }
