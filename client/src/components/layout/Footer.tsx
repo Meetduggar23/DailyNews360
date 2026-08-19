@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { Logo } from "@/components/common/Logo";
-import { useAuthStore } from "@/stores/auth.store";
 
 const NEWS_LINKS = [
   { to: "/", label: "Home" },
@@ -34,8 +33,6 @@ const COMPANY_LINKS = [
 ] as const;
 
 export function Footer() {
-  const user = useAuthStore((state) => state.user);
-
   return (
     <footer className="mt-16 border-t-2 border-ink bg-surface dark:border-ink/80">
       <div className="container-news py-10">
@@ -106,22 +103,15 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col items-center justify-between gap-4 pt-6 sm:flex-row">
+        <div className="flex flex-col items-center gap-3 pt-6 text-center">
           <p className="font-sans text-xs text-mist">
-            © 2025 Daily News360 All Rights Reserved By Duggar Pvt Ltd.
+            © 2026 DAILY NEWS360. All rights reserved. News content remains the property of its original publishers.
           </p>
-          <div className="flex items-center gap-4 font-sans text-xs text-mist">
-            <span className="flex items-center gap-1">
-              Made with
-              <Heart className="h-3 w-3 text-accent" aria-hidden="true" />
-              for readers
-            </span>
-            {user ? (
-              <Link to="/profile" className="transition-colors hover:text-accent">
-                {user.name}
-              </Link>
-            ) : null}
-          </div>
+          <p className="flex items-center gap-1 font-sans text-xs text-mist">
+            Made with
+            <Heart className="h-3 w-3 text-accent" aria-hidden="true" />
+            by Duggar Pvt Ltd
+          </p>
         </div>
       </div>
     </footer>
