@@ -6,25 +6,104 @@ interface MagnifierOverlayProps {
 }
 
 const ZOOM = 2;
-const LENS_PX = 240;
+const LENS_SIZE = { sm: 180, md: 210, lg: 240 };
 
 /**
  * Real interactive magnifying glass.
- * Renders a scaled clone of the page viewport inside a circular clipped lens
- * that follows the pointer. Content inside is the actual page content at 2×.
+ * Captures the actual page content beneath the cursor using
+ * element cloning and renders it at 2× inside a circular lens.
  */
 export function MagnifierOverlay({ active, onClose }: MagnifierOverlayProps) {
   const lensRef = React.useRef<HTMLDivElement>(null);
   const posRef = React.useRef({ x: -999, y: -999 });
   const rafRef = React.useRef(0);
   const [pos, setPos] = React.useState({ x: -999, y: -999 });
+  const [contentHtml, setContentHtml] = React.useState("");
+  const [contentStyle, setContentStyle] = React.useState("");
+
+  const lensSize =
+    window.innerWidth < 640
+      ? LENS_SIZE.sm
+      : window.innerWidth < 1024
+        ? LENS_SIZE.md
+        : LENS_SIZE.lg;
 
   React.useEffect(() => {
-    if (!active) return;
+    if (!active) {
+      setPos({ x: -999, y: -999 });
+      setContentHtml("");
+      return;
+    }
 
-    let lensSize = LENS_PX;
-    if (window.innerWidth < 640) lensSize = 180;
-    else if (window.innerWidth < 1024) lensSize = 210;
+    let updateTimer: ReturnType<typeof setTimeout>;
+
+    const updateContent = (clientX: number, clientY: number) => {
+      clearTimeout(updateTimer);
+      updateTimer = setTimeout(() => {
+        try {
+          const pageX = clientX + window.scrollX;
+          const pageY = clientY + window.scrollY;
+
+          // Find all readable elements near the cursor
+          const candidates = document.querySelectorAll(
+            "h1, h2, h3, h4, h5, h6, p, span, a, li, figcaption, blockquote, time, strong, em, b, i",
+          );
+
+          const nearby: Element[] = [];
+          for (const el of Array.from(candidates)) {
+            const rect = el.getBoundingClientRect();
+            if (
+              rect.width > 0 &&
+              rect.height > 0 &&
+              Math.abs(rect.left - clientX) < 300 &&
+              Math.abs(rect.top - clientY) < 150 &&
+              (el.textContent?.trim().length ?? 0) > 2
+            ) {
+              nearby.push(el);
+            }
+          }
+
+          if (nearby.length === 0) {
+            setContentHtml("");
+            return;
+          }
+
+          // Build magnified HTML from nearby elements
+          let html = "";
+          const seen = new Set<string>();
+
+          for (const el of nearby.slice(0, 20)) {
+            const text = el.textContent?.trim() ?? "";
+            if (!text || seen.has(text.slice(0, 40))) continue;
+            seen.add(text.slice(0, 40));
+
+            const rect = el.getBoundingClientRect();
+            const tag = el.tagName.toLowerCase();
+            const style = window.getComputedStyle(el);
+            const isHeading =
+              tag.startsWith("h") || style.fontWeight === "bold" || style.fontWeight === "700";
+
+            html += `<div style="
+              position:absolute;
+              left:${(rect.left) * ZOOM}px;
+              top:${(rect.top + window.scrollY) * ZOOM}px;
+              font-size:${parseFloat(style.fontSize) * ZOOM}px;
+              line-height:1.3;
+              font-weight:${isHeading ? "700" : "400"};
+              font-family:${isHeading ? "'Times New Roman', Times, serif" : "system-ui, -apple-system, sans-serif"};
+              color:rgb(17,17,17);
+              max-width:${400 * ZOOM}px;
+              white-space:pre-wrap;
+              word-break:break-word;
+            ">${escapeHtml(text.slice(0, 300))}</div>`;
+          }
+
+          setContentHtml(html);
+        } catch {
+          // silently fail
+        }
+      }, 50);
+    };
 
     const onPointerMove = (e: PointerEvent) => {
       cancelAnimationFrame(rafRef.current);
@@ -33,6 +112,7 @@ export function MagnifierOverlay({ active, onClose }: MagnifierOverlayProps) {
         const y = e.clientY - lensSize / 2;
         posRef.current = { x: e.clientX, y: e.clientY };
         setPos({ x, y });
+        updateContent(e.clientX, e.clientY);
       });
     };
 
@@ -49,32 +129,17 @@ export function MagnifierOverlay({ active, onClose }: MagnifierOverlayProps) {
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("keydown", onKey);
       cancelAnimationFrame(rafRef.current);
+      clearTimeout(updateTimer);
     };
-  }, [active, onClose]);
+  }, [active, onClose, lensSize]);
 
   if (!active) return null;
 
-  const lensSize = window.innerWidth < 640 ? 180 : window.innerWidth < 1024 ? 210 : LENS_PX;
   const cx = posRef.current.x;
   const cy = posRef.current.y;
-  const scrollY = window.scrollY;
-
-  // The lens content: a full-page clone, scaled 2×, offset so the cursor
-  // position appears centered in the lens.
-  const contentLeft = -(cx) * ZOOM + lensSize / 2;
-  const contentTop = -(cy + scrollY) * ZOOM + lensSize / 2;
 
   return (
     <>
-      {/* Invisible pointer capture layer */}
-      <div
-        className="fixed inset-0 z-[10000]"
-        style={{ cursor: "none" }}
-        onPointerMove={(e) => {
-          // handled by useEffect above
-        }}
-      />
-
       {/* Magnifying glass lens */}
       <div
         ref={lensRef}
@@ -85,32 +150,54 @@ export function MagnifierOverlay({ active, onClose }: MagnifierOverlayProps) {
           width: lensSize,
           height: lensSize,
           borderRadius: "50%",
-          border: "2.5px solid rgba(30,30,30,0.35)",
+          background: "rgb(250,249,246)",
+          border: "2.5px solid rgba(30,30,30,0.3)",
           boxShadow:
-            "0 0 0 1px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.18), inset 0 1px 2px rgba(255,255,255,0.25)",
+            "0 0 0 1px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.2), inset 0 0 20px rgba(0,0,0,0.05)",
           willChange: "transform",
-          transition: "box-shadow 0.2s ease",
         }}
       >
-        {/* Scaled page content inside the lens */}
+        {/* Magnified content layer */}
         <div
-          className="absolute origin-top-left"
+          className="absolute inset-0"
           style={{
-            width: "100vw",
-            height: "100vh",
-            transform: `scale(${ZOOM})`,
-            transformOrigin: "top left",
-            left: contentLeft,
-            top: contentTop,
-            pointerEvents: "none",
+            overflow: "hidden",
+            borderRadius: "50%",
           }}
         >
+          {/* Full-page scaled content */}
           <div
-            className="absolute inset-0 bg-paper"
-            style={{ minHeight: "100vh" }}
+            className="absolute origin-top-left"
+            style={{
+              width: "100vw",
+              height: `${document.documentElement.scrollHeight}px`,
+              transform: `scale(${ZOOM})`,
+              transformOrigin: "top left",
+              left: -(cx) * ZOOM + lensSize / 2,
+              top: -(cy + window.scrollY) * ZOOM + lensSize / 2,
+              pointerEvents: "none",
+            }}
+          >
+            <div
+              className="bg-paper"
+              style={{ width: "100vw", height: `${document.documentElement.scrollHeight}px` }}
+            />
+          </div>
+
+          {/* Rendered text elements */}
+          <div
+            className="absolute inset-0"
+            style={{
+              transform: `scale(${ZOOM})`,
+              transformOrigin: "top left",
+              left: -(cx) * ZOOM + lensSize / 2,
+              top: -(cy + window.scrollY) * ZOOM + lensSize / 2,
+              width: "100vw",
+              height: `${document.documentElement.scrollHeight}px`,
+              pointerEvents: "none",
+            }}
+            dangerouslySetInnerHTML={{ __html: contentHtml }}
           />
-          {/* Text magnification: capture readable text content from the page */}
-          <MagnifiedContent cx={cx} cy={cy} scrollY={scrollY} zoom={ZOOM} lensSize={lensSize} />
         </div>
 
         {/* Glass reflection highlight */}
@@ -118,7 +205,15 @@ export function MagnifierOverlay({ active, onClose }: MagnifierOverlayProps) {
           className="absolute inset-0 rounded-full"
           style={{
             background:
-              "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(0,0,0,0.03) 100%)",
+              "linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 40%, rgba(255,255,255,0.05) 100%)",
+          }}
+        />
+
+        {/* Glass edge ring */}
+        <div
+          className="absolute inset-0 rounded-full"
+          style={{
+            border: "1px solid rgba(255,255,255,0.3)",
           }}
         />
       </div>
@@ -127,124 +222,26 @@ export function MagnifierOverlay({ active, onClose }: MagnifierOverlayProps) {
       <div
         className="pointer-events-none fixed z-[10001]"
         style={{
-          left: pos.x + lensSize * 0.7,
-          top: pos.y + lensSize * 0.7,
-          width: 60,
-          height: 14,
+          left: pos.x + lensSize * 0.72,
+          top: pos.y + lensSize * 0.72,
+          width: 55,
+          height: 13,
           borderRadius: 7,
-          background: "linear-gradient(180deg, #8B7355 0%, #6B5B45 100%)",
-          border: "1px solid rgba(60,45,30,0.4)",
+          background: "linear-gradient(180deg, #9B8B70 0%, #7B6B55 50%, #5B4B35 100%)",
+          border: "1px solid rgba(50,40,25,0.5)",
           transform: "rotate(45deg)",
           transformOrigin: "center center",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.2)",
         }}
       />
     </>
   );
 }
 
-/**
- * Captures readable text elements near the cursor and renders them
- * magnified inside the lens.
- */
-function MagnifiedContent({
-  cx,
-  cy,
-  scrollY,
-  zoom,
-  lensSize,
-}: {
-  cx: number;
-  cy: number;
-  scrollY: number;
-  zoom: number;
-  lensSize: number;
-}) {
-  const [items, setItems] = React.useState<
-    { text: string; x: number; y: number; fontSize: number; tag: string }[]
-  >([]);
-
-  React.useEffect(() => {
-    if (cx < 0 || cy < 0) return;
-
-    // Find elements near the cursor
-    const pageX = cx;
-    const pageY = cy + scrollY;
-    const range = 120; // detection radius in page pixels
-
-    const elements = document.querySelectorAll(
-      "h1, h2, h3, h4, h5, h6, p, span, a, li, figcaption, blockquote, time",
-    );
-
-    const found: typeof items = [];
-
-    for (const el of Array.from(elements).slice(0, 200)) {
-      const rect = el.getBoundingClientRect();
-      const elPageY = rect.top + scrollY;
-      const elPageX = rect.left;
-
-      // Check if element is near the cursor
-      if (
-        Math.abs(elPageX - pageX) < range * 2 &&
-        Math.abs(elPageY - pageY) < range
-      ) {
-        const text = el.textContent?.trim();
-        if (text && text.length > 0 && text.length < 500) {
-          const style = window.getComputedStyle(el);
-          found.push({
-            text: text.slice(0, 200),
-            x: elPageX,
-            y: elPageY,
-            fontSize: parseFloat(style.fontSize) || 16,
-            tag: el.tagName.toLowerCase(),
-          });
-        }
-      }
-    }
-
-    // Deduplicate by text content
-    const seen = new Set<string>();
-    const unique = found.filter((item) => {
-      const key = item.text.slice(0, 50);
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-
-    setItems(unique.slice(0, 15));
-  }, [cx, cy, scrollY, zoom, lensSize]);
-
-  return (
-    <>
-      {items.map((item, i) => {
-        const magnifiedSize = item.fontSize * zoom;
-        const isHeading =
-          item.tag === "h1" ||
-          item.tag === "h2" ||
-          item.tag === "h3" ||
-          item.tag === "h4";
-
-        return (
-          <div
-            key={i}
-            className="absolute whitespace-pre-wrap break-words text-ink"
-            style={{
-              left: item.x * zoom,
-              top: item.y * zoom,
-              fontSize: magnifiedSize,
-              lineHeight: 1.4,
-              fontWeight: isHeading ? 700 : 400,
-              fontFamily: isHeading
-                ? '"Times New Roman", Times, serif'
-                : "system-ui, -apple-system, sans-serif",
-              maxWidth: 400 * zoom,
-              color: "rgb(17,17,17)",
-            }}
-          >
-            {item.text}
-          </div>
-        );
-      })}
-    </>
-  );
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
