@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { MenuButton } from "@/components/navigation/MenuButton";
 import { SideMenu } from "@/components/navigation/SideMenu";
+import { CategoryNavbar } from "@/components/navigation/CategoryNavbar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -195,6 +196,8 @@ export function Navbar() {
           </div>
         </div>
       </header>
+
+      <CategoryNavbar />
 
       <SideMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
 

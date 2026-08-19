@@ -108,9 +108,7 @@ export function Footer() {
             © 2026 DAILY NEWS360. All rights reserved. News content remains the property of its original publishers.
           </p>
           <p className="flex items-center gap-1 font-sans text-xs text-mist">
-            Made with
-            <Heart className="h-3 w-3 text-accent" aria-hidden="true" />
-            by Duggar Pvt Ltd
+            Made by Duggar Pvt Ltd
           </p>
         </div>
       </div>

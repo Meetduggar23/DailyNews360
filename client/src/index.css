@@ -176,3 +176,15 @@ body::-webkit-scrollbar,
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
+/* Category navbar horizontal scroll with hidden scrollbar */
+.category-navbar {
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.category-navbar::-webkit-scrollbar {
+  display: none;
+}
